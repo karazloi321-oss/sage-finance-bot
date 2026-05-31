@@ -150,7 +150,6 @@ def parse_message(message):
     except Exception as e:
 
         print(e)
-```
 
 
 bot.infinity_polling(skip_pending=True)
