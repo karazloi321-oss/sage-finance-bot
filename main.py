@@ -3,8 +3,7 @@ from telebot import types
 import json
 import os
 
-TOKEN = "8921235792:AAGYIAMNnIuKoPv3RsmRpOn-28bx0BqpaK4
-"
+TOKEN = "8921235792:AAGYIAMNnIuKoPv3RsmRpOn-28bx0BqpaK4\n"
 
 bot = telebot.TeleBot(TOKEN)
 
