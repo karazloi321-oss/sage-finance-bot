@@ -156,4 +156,7 @@ def parse_message(message):
 ```
 
 
-bot.infinity_polling()
+```python
+bot.infinity_polling(skip_pending=True)
+```
+
