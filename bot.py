@@ -77,38 +77,83 @@ def ask_expense(message):
 @bot.message_handler(func=lambda m: True)
 def parse_expense(message):
 
+    t```python
+CATEGORIES = {
+    "продукты": "Продукты",
+    "автобус": "Транспорт",
+    "проезд": "Транспорт",
+    "кафе": "Кафе",
+    "кофе": "Кафе",
+    "игры": "Игры",
+    "дом": "Для дома",
+    "связь": "Связь",
+    "сын": "Сын"
+}
+
+@bot.message_handler(func=lambda m: True)
+def parse_message(message):
+
     try:
 
-        parts = message.text.split()
+        text = message.text.lower().split()
 
-        if len(parts) < 3:
+        if len(text) < 2:
             return
 
-        title = parts[0]
-        amount = float(parts[1])
-        method = parts[2].lower()
+        title = text[0]
+        amount = float(text[1])
 
-        tx = {
+        method = "карта"
+
+        if len(text) >= 3:
+            method = text[2]
+
+        category = "Прочее"
+
+        for key, value in CATEGORIES.items():
+
+            if key in title:
+                category = value
+
+        transaction = {
             "title": title,
             "amount": amount,
-            "method": method
+            "method": method,
+            "category": category
         }
 
-        data["transactions"].insert(0, tx)
+        data["transactions"].insert(0, transaction)
 
-        if "карт" in method:
-            data["card"] -= amount
+        if "зарплата" in title or "доход" in title:
+
+            if "карт" in method:
+                data["card"] += amount
+            else:
+                data["cash"] += amount
+
+            bot.send_message(
+                message.chat.id,
+                f"✅ Доход добавлен: {amount} р"
+            )
+
         else:
-            data["cash"] -= amount
+
+            if "карт" in method:
+                data["card"] -= amount
+            else:
+                data["cash"] -= amount
+
+            bot.send_message(
+                message.chat.id,
+                f"💸 Расход добавлен: {amount} р\nКатегория: {category}"
+            )
 
         save_data(data)
 
-        bot.send_message(
-            message.chat.id,
-            f"Добавлено: {title} {amount} р"
-        )
+    except Exception as e:
 
-    except:
-        pass
+        print(e)
+```
+
 
 bot.infinity_polling()
