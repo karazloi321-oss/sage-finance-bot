@@ -36,9 +36,11 @@ def start(message):
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
-    markup.add("💸 Расход")
-    markup.add("💰 Баланс")
-    markup.add("📋 Долги")
+    
+markup.add("💸 Расход", "💰 Баланс")
+markup.add("📋 Долги", "📊 Аналитика")
+markup.add("🔄 Перевод", "🧾 История")
+
 
     bot.send_message(
         message.chat.id,
@@ -150,7 +152,52 @@ def parse_message(message):
     except Exception as e:
 
         print(e)
+@bot.message_handler(func=lambda m: m.text == "🧾 История")
+def history(message):
 
+    text = "Последние операции:\n\n"
+
+    for tx in data["transactions"][:10]:
+
+        text += (
+            f"{tx['title']} — "
+            f"{tx['amount']} р "
+            f"({tx['category']})\n"
+        )
+
+    bot.send_message(message.chat.id, text)
+
+
+@bot.message_handler(func=lambda m: m.text == "📊 Аналитика")
+def analytics(message):
+
+    stats = {}
+
+    for tx in data["transactions"]:
+
+        category = tx.get("category", "Прочее")
+
+        stats[category] = (
+            stats.get(category, 0)
+            + tx["amount"]
+        )
+
+    text = "Расходы по категориям:\n\n"
+
+    for cat, amount in stats.items():
+
+        text += f"{cat}: {round(amount,2)} р\n"
+
+    bot.send_message(message.chat.id, text)
+
+
+@bot.message_handler(func=lambda m: m.text == "🔄 Перевод")
+def transfer_help(message):
+
+    bot.send_message(
+        message.chat.id,
+        "Пример:\nперевод 50 в наличные"
+    )
 
 bot.infinity_polling(skip_pending=True)
 
