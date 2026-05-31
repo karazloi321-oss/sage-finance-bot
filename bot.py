@@ -1,7 +1,9 @@
+
 import telebot
 from telebot import types
 import json
 import os
+import time
 
 TOKEN = os.getenv("TOKEN")
 
@@ -9,14 +11,17 @@ bot = telebot.TeleBot(TOKEN)
 
 DATA_FILE = "finance.json"
 
+
 def load_data():
+
     if os.path.exists(DATA_FILE):
+
         with open(DATA_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
 
     return {
-        "card": 105.98,
-        "cash": 57.93,
+        "card": 0,
+        "cash": 0,
         "transactions": [],
         "debts": {
             "Красная карта": 2000,
@@ -25,14 +30,32 @@ def load_data():
         }
     }
 
+
 def save_data(data):
+
     with open(DATA_FILE, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
+
 data = load_data()
+
 
 @bot.message_handler(commands=["start"])
 def start(message):
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+    markup.add("💸 Расход", "💰 Баланс")
+    markup.add("📋 Долги", "📊 Аналитика")
+    markup.add("🧾 История")
+
+    bot.send_message(
+        message.chat.id,
+        "Sage Finance Bot запущен ✅",
+        reply_markup=markup
+    )
+
+
 @bot.message_handler(func=lambda m: m.text == "💰 Баланс")
 def balance(message):
 
@@ -63,10 +86,12 @@ def history(message):
 
     for tx in data["transactions"][:10]:
 
+        category = tx.get("category", "Прочее")
+
         text += (
             f"{tx['title']} — "
             f"{tx['amount']} р "
-            f"({tx['category']})\n"
+            f"({category})\n"
         )
 
     bot.send_message(message.chat.id, text)
@@ -90,7 +115,7 @@ def analytics(message):
 
     for cat, amount in stats.items():
 
-        text += f"{cat}: {round(amount,2)} р\n"
+        text += f"{cat}: {round(amount, 2)} р\n"
 
     bot.send_message(message.chat.id, text)
 
@@ -173,8 +198,6 @@ def parse_message(message):
 
         print(e)
 
-
-import time
 
 while True:
 
