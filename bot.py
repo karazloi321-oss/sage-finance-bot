@@ -152,10 +152,9 @@ def parse_message(message):
     except Exception as e:
 
         print(e)
-```
-
-
-```python
+        ```python
 bot.infinity_polling(skip_pending=True)
 ```
+
+
 
