@@ -75,9 +75,7 @@ def ask_expense(message):
     )
 
 @bot.message_handler(func=lambda m: True)
-def parse_expense(message):
-
-CATEGORIES = {
+def parse_expense(message):CATEGORIES = {
     "продукты": "Продукты",
     "автобус": "Транспорт",
     "проезд": "Транспорт",
