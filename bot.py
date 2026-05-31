@@ -198,7 +198,23 @@ def transfer_help(message):
         message.chat.id,
         "Пример:\nперевод 50 в наличные"
     )
+import time
 
-bot.infinity_polling(skip_pending=True)
+while True:
+
+    try:
+
+        bot.infinity_polling(
+            timeout=10,
+            long_polling_timeout=5,
+            skip_pending=True
+        )
+
+    except Exception as e:
+
+        print(e)
+
+        time.sleep(5)
+
 
 
