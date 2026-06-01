@@ -1,61 +1,63 @@
-from flask import Flask, render_template
-import telebot
-from telebot import types
-import threading
+from flask import Flask
 import os
 
-TOKEN = os.getenv("TOKEN")
-
-bot = telebot.TeleBot(TOKEN)
-
-app = Flask(__name__)
-
+app = Flask(**name**)
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+return """ <html> <head> <title>Sage Finance</title> <meta name="viewport" content="width=device-width, initial-scale=1"> <style>
+body{
+background:#d9e5d6;
+font-family:sans-serif;
+padding:40px;
+text-align:center;
+}
 
+```
+        .card{
+            background:white;
+            padding:30px;
+            border-radius:20px;
+            max-width:400px;
+            margin:auto;
+        }
 
-@bot.message_handler(commands=["start"])
-def start(message):
+        h1{
+            color:#1f2a1f;
+        }
 
-    markup = types.ReplyKeyboardMarkup(
-        resize_keyboard=True
-    )
+        button{
+            width:100%;
+            padding:18px;
+            border:none;
+            border-radius:16px;
+            background:#7c9b76;
+            color:white;
+            font-size:20px;
+            margin-top:20px;
+        }
+    </style>
+</head>
 
-    webapp = types.WebAppInfo(
-        "https://ТВОЙ-RENDER-URL.onrender.com"
-    )
+<body>
 
-    button = types.KeyboardButton(
-        "📱 Открыть Sage Finance",
-        web_app=webapp
-    )
+    <div class="card">
 
-    markup.add(button)
+        <h1>Sage Finance</h1>
 
-    bot.send_message(
-        message.chat.id,
-        "🚀 Sage Finance",
-        reply_markup=markup
-    )
-def run_bot():
+        <h2>Баланс: 0 ₽</h2>
 
-    try:
+        <button>
+            Добавить расход
+        </button>
 
-        bot.remove_webhook()
+    </div>
 
-        bot.infinity_polling(
-            skip_pending=True
-        )
+</body>
+</html>
+"""
+```
 
-    except Exception as e:
+if **name** == "**main**":
+app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
 
-        print(e)
-
-
-if __name__ == "__main__":
-
-    threading.Thread(
-        target=run_bot
-    ).start()
