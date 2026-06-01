@@ -109,7 +109,6 @@ return
 
 </body>
 </html>
-
 @bot.message_handler(commands=["start"])
 def start(message):
 
@@ -122,7 +121,7 @@ webapp = types.WebAppInfo(
 )
 
 button = types.KeyboardButton(
-    "📱 Открыть Sage Finance",
+    "📱 Открыть Sage Finance"
     web_app=webapp
 )
 
@@ -130,7 +129,7 @@ markup.add(button)
 
 bot.send_message(
     message.chat.id,
-    "🚀 Sage Finance готов",
+    "🚀 Sage Finance готов"
     reply_markup=markup
 )
 
@@ -155,10 +154,10 @@ threading.Thread(
 ).start()
 
 app.run(
-    host="0.0.0.0",
+    host="0.0.0.0"
     port=int(
         os.environ.get(
-            "PORT",
+            "PORT"
             10000
         )
     )
