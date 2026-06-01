@@ -122,7 +122,7 @@ markup = types.ReplyKeyboardMarkup(
 )
 
 webapp = types.WebAppInfo(
-    "https://ТВОЙ-URL.onrender.com"
+    "https://sage-finance.onrender.com"
 )
 
 button = types.KeyboardButton(
@@ -171,4 +171,3 @@ app.run(
         )
     )
 )
-https://sage-finance.onrender.com/
