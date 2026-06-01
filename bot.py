@@ -11,7 +11,7 @@ bot = telebot.TeleBot(TOKEN)
 app = Flask(__name__)
 
 @app.route("/")
-def home
+def home ();
 return
 <html>
 <head>
