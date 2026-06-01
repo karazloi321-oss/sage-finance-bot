@@ -4,12 +4,15 @@ from telebot import types
 import json
 import os
 import time
+from datetime import datetime
 
 TOKEN = os.getenv("TOKEN")
 
 bot = telebot.TeleBot(TOKEN)
 
 DATA_FILE = "finance.json"
+
+PIN_CODE = "1111"
 
 
 def load_data():
@@ -39,21 +42,49 @@ def save_data(data):
 
 data = load_data()
 
+authorized_users = set()
 
-@bot.message_handler(commands=["start"])
-def start(message):
+
+def get_main_keyboard():
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
     markup.add("💸 Расход", "💰 Баланс")
     markup.add("📋 Долги", "📊 Аналитика")
-    markup.add("🧾 История")
+    markup.add("🧾 История", "📅 Месяц")
+    markup.add("🔄 Перевод")
+
+    return markup
+
+
+@bot.message_handler(commands=["start"])
+def start(message):
 
     bot.send_message(
         message.chat.id,
-        "Sage Finance Bot запущен ✅",
-        reply_markup=markup
+        "🔐 Введите PIN-код"
     )
+
+
+@bot.message_handler(func=lambda m: str(m.chat.id) not in authorized_users)
+def auth(message):
+
+    if message.text == PIN_CODE:
+
+        authorized_users.add(str(message.chat.id))
+
+        bot.send_message(
+            message.chat.id,
+            "✅ Доступ разрешен",
+            reply_markup=get_main_keyboard()
+        )
+
+    else:
+
+        bot.send_message(
+            message.chat.id,
+            "❌ Неверный PIN"
+        )
 
 
 @bot.message_handler(func=lambda m: m.text == "💰 Баланс")
@@ -72,9 +103,15 @@ def debts(message):
 
     txt = "📋 Долги:\n\n"
 
+    total = 0
+
     for name, amount in data["debts"].items():
 
         txt += f"{name}: {amount} р\n"
+
+        total += amount
+
+    txt += f"\nОбщий долг: {total} р"
 
     bot.send_message(message.chat.id, txt)
 
@@ -84,11 +121,12 @@ def history(message):
 
     text = "🧾 Последние операции:\n\n"
 
-    for tx in data["transactions"][:10]:
+    for tx in data["transactions"][:15]:
 
         category = tx.get("category", "Прочее")
 
         text += (
+            f"{tx['date']} | "
             f"{tx['title']} — "
             f"{tx['amount']} р "
             f"({category})\n"
@@ -104,12 +142,14 @@ def analytics(message):
 
     for tx in data["transactions"]:
 
-        category = tx.get("category", "Прочее")
+        if tx["type"] == "expense":
 
-        stats[category] = (
-            stats.get(category, 0)
-            + tx["amount"]
-        )
+            category = tx.get("category", "Прочее")
+
+            stats[category] = (
+                stats.get(category, 0)
+                + tx["amount"]
+            )
 
     text = "📊 Расходы по категориям:\n\n"
 
@@ -118,6 +158,44 @@ def analytics(message):
         text += f"{cat}: {round(amount, 2)} р\n"
 
     bot.send_message(message.chat.id, text)
+
+
+@bot.message_handler(func=lambda m: m.text == "📅 Месяц")
+def month_stats(message):
+
+    income = 0
+    expense = 0
+
+    current_month = datetime.now().strftime("%m.%Y")
+
+    for tx in data["transactions"]:
+
+        if current_month in tx["date"]:
+
+            if tx["type"] == "income":
+                income += tx["amount"]
+            else:
+                expense += tx["amount"]
+
+    profit = income - expense
+
+    text = (
+        f"📅 Статистика месяца\n\n"
+        f"💰 Доходы: {income:.2f} р\n"
+        f"💸 Расходы: {expense:.2f} р\n"
+        f"📈 Разница: {profit:.2f} р"
+    )
+
+    bot.send_message(message.chat.id, text)
+
+
+@bot.message_handler(func=lambda m: m.text == "🔄 Перевод")
+def transfer_help(message):
+
+    bot.send_message(
+        message.chat.id,
+        "Пример:\nперевод 50 в наличные"
+    )
 
 
 CATEGORIES = {
@@ -129,7 +207,9 @@ CATEGORIES = {
     "игры": "Игры",
     "дом": "Для дома",
     "связь": "Связь",
-    "сын": "Сын"
+    "сын": "Сын",
+    "зарплата": "Доход",
+    "аванс": "Доход"
 }
 
 
@@ -138,18 +218,46 @@ def parse_message(message):
 
     try:
 
-        text = message.text.lower().split()
+        text = message.text.lower()
 
-        if len(text) < 2:
+        if text.startswith("перевод"):
+
+            words = text.split()
+
+            amount = float(words[1])
+
+            if "наличные" in text:
+
+                data["card"] -= amount
+                data["cash"] += amount
+
+            else:
+
+                data["cash"] -= amount
+                data["card"] += amount
+
+            save_data(data)
+
+            bot.send_message(
+                message.chat.id,
+                "✅ Перевод выполнен"
+            )
+
             return
 
-        title = text[0]
-        amount = float(text[1])
+        words = text.split()
+
+        if len(words) < 2:
+            return
+
+        title = words[0]
+
+        amount = float(words[1])
 
         method = "карта"
 
-        if len(text) >= 3:
-            method = text[2]
+        if len(words) >= 3:
+            method = words[2]
 
         category = "Прочее"
 
@@ -158,16 +266,27 @@ def parse_message(message):
             if key in title:
                 category = value
 
+        tx_type = "expense"
+
+        if (
+            "зарплата" in title
+            or "доход" in title
+            or "аванс" in title
+        ):
+            tx_type = "income"
+
         transaction = {
             "title": title,
             "amount": amount,
             "method": method,
-            "category": category
+            "category": category,
+            "type": tx_type,
+            "date": datetime.now().strftime("%d.%m.%Y")
         }
 
         data["transactions"].insert(0, transaction)
 
-        if "зарплата" in title or "доход" in title:
+        if tx_type == "income":
 
             if "карт" in method:
                 data["card"] += amount
@@ -176,7 +295,7 @@ def parse_message(message):
 
             bot.send_message(
                 message.chat.id,
-                f"✅ Доход добавлен: {amount} р"
+                f"✅ Доход: {amount} р"
             )
 
         else:
@@ -188,8 +307,8 @@ def parse_message(message):
 
             bot.send_message(
                 message.chat.id,
-                f"💸 Расход добавлен: {amount} р\n"
-                f"Категория: {category}"
+                f"💸 Расход: {amount} р\n"
+                f"📂 Категория: {category}"
             )
 
         save_data(data)
@@ -197,6 +316,11 @@ def parse_message(message):
     except Exception as e:
 
         print(e)
+
+        bot.send_message(
+            message.chat.id,
+            "⚠️ Ошибка ввода"
+        )
 
 
 while True:
@@ -214,3 +338,4 @@ while True:
         print(e)
 
         time.sleep(5)
+
