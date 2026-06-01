@@ -15,6 +15,26 @@ PIN_CODE = "1111"
 
 LOW_BALANCE = 50
 
+MONTH_LIMIT = 1500
+
+
+AUTO_CATEGORIES = {
+    "продукты": "Продукты",
+    "магазин": "Продукты",
+    "евроопт": "Продукты",
+    "такси": "Транспорт",
+    "автобус": "Транспорт",
+    "проезд": "Транспорт",
+    "кафе": "Кафе",
+    "кофе": "Кафе",
+    "дом": "Для дома",
+    "ремонт": "Для дома",
+    "игры": "Игры",
+    "steam": "Игры",
+    "связь": "Связь",
+    "мтс": "Связь"
+}
+
 
 EXPENSE_CATEGORIES = {
     "🍔 Продукты": "Продукты",
@@ -63,12 +83,7 @@ def load_data():
 
 def save_data(data):
 
-    backup = f"backup_{datetime.now().strftime('%d_%m_%Y')}.json"
-
     with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-    with open(backup, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
@@ -87,8 +102,57 @@ def main_keyboard():
     markup.add("💳 Баланс", "📊 Аналитика")
     markup.add("🧾 История", "📋 Долги")
     markup.add("📅 Месяц", "📈 Сегодня")
+    markup.add("🔄 Перевод", "📤 Backup")
+    markup.add("🔍 Поиск", "🗑 Удалить")
 
     return markup
+
+
+def financial_health():
+
+    total = data["card"] + data["cash"]
+
+    debts = sum(data["debts"].values())
+
+    if total <= 0:
+        return "🔴 Критично"
+
+    if debts > total * 5:
+        return "🟠 Риск"
+
+    if debts > total * 2:
+        return "🟡 Нормально"
+
+    return "🟢 Хорошо"
+
+
+def add_transaction(category, amount, method, tx_type):
+
+    transaction = {
+        "category": category,
+        "amount": amount,
+        "method": method,
+        "type": tx_type,
+        "date": datetime.now().strftime("%d.%m.%Y %H:%M")
+    }
+
+    data["transactions"].insert(0, transaction)
+
+    if tx_type == "expense":
+
+        if method == "card":
+            data["card"] -= amount
+        else:
+            data["cash"] -= amount
+
+    else:
+
+        if method == "card":
+            data["card"] += amount
+        else:
+            data["cash"] += amount
+
+    save_data(data)
 
 
 @bot.message_handler(commands=["start"])
@@ -137,7 +201,7 @@ def expense_menu(message):
 
     bot.send_message(
         message.chat.id,
-        "Выберите категорию расхода:",
+        "Категория расхода:",
         reply_markup=markup
     )
 
@@ -158,7 +222,7 @@ def income_menu(message):
 
     bot.send_message(
         message.chat.id,
-        "Выберите категорию дохода:",
+        "Категория дохода:",
         reply_markup=markup
     )
 
@@ -208,6 +272,7 @@ def choose_amount(message):
     for amount in FAST_AMOUNTS:
         markup.add(f"{amount} р")
 
+    markup.add("✍️ Своя сумма")
     markup.add("⬅️ Назад")
 
     bot.send_message(
@@ -217,75 +282,259 @@ def choose_amount(message):
     )
 
 
-@bot.message_handler(func=lambda m: "р" in m.text)
-def save_transaction(message):
+@bot.message_handler(func=lambda m: m.text == "✍️ Своя сумма")
+def custom_amount(message):
 
-    if message.chat.id not in user_states:
+    bot.send_message(
+        message.chat.id,
+        "Введите сумму:"
+    )
+
+
+@bot.message_handler(func=lambda m: m.text == "🗑 Удалить")
+def delete_last(message):
+
+    if len(data["transactions"]) == 0:
+
+        bot.send_message(
+            message.chat.id,
+            "❌ История пуста"
+        )
+
         return
 
-    try:
+    tx = data["transactions"].pop(0)
 
-        amount = float(
-            message.text.replace("р", "").strip()
-        )
+    if tx["type"] == "expense":
 
-        state = user_states[message.chat.id]
-
-        transaction = {
-            "category": state["category"],
-            "amount": amount,
-            "method": state["method"],
-            "type": state["type"],
-            "date": datetime.now().strftime("%d.%m.%Y")
-        }
-
-        data["transactions"].insert(0, transaction)
-
-        if state["type"] == "expense":
-
-            if state["method"] == "card":
-                data["card"] -= amount
-            else:
-                data["cash"] -= amount
-
+        if tx["method"] == "card":
+            data["card"] += tx["amount"]
         else:
+            data["cash"] += tx["amount"]
 
-            if state["method"] == "card":
-                data["card"] += amount
-            else:
-                data["cash"] += amount
+    else:
 
-        save_data(data)
+        if tx["method"] == "card":
+            data["card"] -= tx["amount"]
+        else:
+            data["cash"] -= tx["amount"]
 
-        del user_states[message.chat.id]
+    save_data(data)
 
-        total = data["card"] + data["cash"]
+    bot.send_message(
+        message.chat.id,
+        f"🗑 Удалено:\n"
+        f"{tx['category']} {tx['amount']} р"
+    )
 
-        text = (
-            f"✅ Операция добавлена\n\n"
-            f"📂 {transaction['category']}\n"
-            f"💵 {amount} р"
+
+@bot.message_handler(func=lambda m: True)
+def universal_handler(message):
+
+    text = (
+        message.text
+        .lower()
+        .replace(",", ".")
+        .strip()
+    )
+
+    if text == "⬅️ назад":
+
+        if message.chat.id in user_states:
+            del user_states[message.chat.id]
+
+        bot.send_message(
+            message.chat.id,
+            "Главное меню",
+            reply_markup=main_keyboard()
         )
 
-        if total <= LOW_BALANCE:
+        return
 
-            text += (
-                f"\n\n⚠️ Низкий баланс!"
-                f"\nОсталось: {total:.2f} р"
+    if text == "📤 backup":
+
+        with open(DATA_FILE, "rb") as f:
+
+            bot.send_document(
+                message.chat.id,
+                f
+            )
+
+        return
+
+    if text.startswith("поиск"):
+
+        query = text.replace("поиск", "").strip()
+
+        results = []
+
+        for tx in data["transactions"]:
+
+            if (
+                query in tx["category"].lower()
+                or query in str(tx["amount"])
+            ):
+
+                results.append(tx)
+
+        if len(results) == 0:
+
+            bot.send_message(
+                message.chat.id,
+                "❌ Ничего не найдено"
+            )
+
+            return
+
+        reply = "🔍 Результаты:\n\n"
+
+        for tx in results[:15]:
+
+            reply += (
+                f"{tx['date']} | "
+                f"{tx['category']} | "
+                f"{tx['amount']} р\n"
             )
 
         bot.send_message(
             message.chat.id,
-            text,
-            reply_markup=main_keyboard()
+            reply
         )
 
-    except:
+        return
 
-        bot.send_message(
-            message.chat.id,
-            "⚠️ Ошибка суммы"
-        )
+    if text.startswith("перевод"):
+
+        try:
+
+            words = text.split()
+
+            amount = float(words[1])
+
+            if "нал" in text:
+
+                data["card"] -= amount
+                data["cash"] += amount
+
+            else:
+
+                data["cash"] -= amount
+                data["card"] += amount
+
+            save_data(data)
+
+            bot.send_message(
+                message.chat.id,
+                "✅ Перевод выполнен"
+            )
+
+        except:
+
+            bot.send_message(
+                message.chat.id,
+                "⚠️ Ошибка перевода"
+            )
+
+        return
+
+    if message.chat.id in user_states:
+
+        try:
+
+            amount = float(
+                text.replace("р", "")
+            )
+
+            state = user_states[message.chat.id]
+
+            add_transaction(
+                state["category"],
+                amount,
+                state["method"],
+                state["type"]
+            )
+
+            del user_states[message.chat.id]
+
+            total = data["card"] + data["cash"]
+
+            reply = (
+                f"✅ Добавлено\n\n"
+                f"{state['category']}: "
+                f"{amount:.2f} р"
+            )
+
+            if total <= LOW_BALANCE:
+
+                reply += (
+                    f"\n\n⚠️ Низкий баланс:"
+                    f"\n{total:.2f} р"
+                )
+
+            bot.send_message(
+                message.chat.id,
+                reply,
+                reply_markup=main_keyboard()
+            )
+
+        except:
+
+            bot.send_message(
+                message.chat.id,
+                "⚠️ Введите сумму"
+            )
+
+        return
+
+    words = text.split()
+
+    if len(words) >= 2:
+
+        try:
+
+            title = words[0]
+
+            amount = float(words[1])
+
+            category = "Прочее"
+
+            tx_type = "expense"
+
+            method = "card"
+
+            for key, value in AUTO_CATEGORIES.items():
+
+                if key in title:
+                    category = value
+
+            if (
+                "зарплата" in title
+                or "доход" in title
+                or "аванс" in title
+            ):
+
+                tx_type = "income"
+
+                category = "Доход"
+
+            add_transaction(
+                category,
+                amount,
+                method,
+                tx_type
+            )
+
+            bot.send_message(
+                message.chat.id,
+                f"✅ Быстро добавлено\n"
+                f"{category}: {amount:.2f} р",
+                reply_markup=main_keyboard()
+            )
+
+            return
+
+        except:
+            pass
 
 
 @bot.message_handler(func=lambda m: m.text == "💳 Баланс")
@@ -293,10 +542,13 @@ def balance(message):
 
     total = data["card"] + data["cash"]
 
+    health = financial_health()
+
     text = (
         f"💳 Карта: {data['card']:.2f} р\n"
         f"💵 Наличные: {data['cash']:.2f} р\n\n"
-        f"💰 Всего: {total:.2f} р"
+        f"💰 Всего: {total:.2f} р\n"
+        f"🏦 Состояние: {health}"
     )
 
     bot.send_message(message.chat.id, text)
@@ -321,6 +573,15 @@ def debts(message):
 @bot.message_handler(func=lambda m: m.text == "🧾 История")
 def history(message):
 
+    if len(data["transactions"]) == 0:
+
+        bot.send_message(
+            message.chat.id,
+            "История пуста"
+        )
+
+        return
+
     text = "🧾 Последние операции:\n\n"
 
     for tx in data["transactions"][:20]:
@@ -330,8 +591,15 @@ def history(message):
         if tx["type"] == "income":
             emoji = "💰"
 
+        method = "💳"
+
+        if tx["method"] == "cash":
+            method = "💵"
+
         text += (
-            f"{emoji} {tx['date']} | "
+            f"{emoji} "
+            f"{tx['date']} | "
+            f"{method} "
             f"{tx['category']} | "
             f"{tx['amount']} р\n"
         )
@@ -344,6 +612,11 @@ def analytics(message):
 
     stats = {}
 
+    total_expense = 0
+
+    biggest = 0
+    biggest_category = ""
+
     for tx in data["transactions"]:
 
         if tx["type"] == "expense":
@@ -355,17 +628,47 @@ def analytics(message):
                 + tx["amount"]
             )
 
+            total_expense += tx["amount"]
+
+            if tx["amount"] > biggest:
+
+                biggest = tx["amount"]
+                biggest_category = category
+
     sorted_stats = sorted(
         stats.items(),
         key=lambda x: x[1],
         reverse=True
     )
 
-    text = "📊 Топ расходов:\n\n"
+    text = "📊 Аналитика:\n\n"
 
     for cat, amount in sorted_stats:
 
-        text += f"{cat}: {round(amount, 2)} р\n"
+        percent = 0
+
+        if total_expense > 0:
+
+            percent = (
+                amount / total_expense
+            ) * 100
+
+        text += (
+            f"{cat}: "
+            f"{amount:.2f} р "
+            f"({percent:.0f}%)\n"
+        )
+
+    text += (
+        f"\n🔥 Самая большая трата:\n"
+        f"{biggest_category}: {biggest:.2f} р"
+    )
+
+    if total_expense >= MONTH_LIMIT:
+
+        text += (
+            f"\n\n⚠️ Лимит превышен!"
+        )
 
     bot.send_message(message.chat.id, text)
 
@@ -388,7 +691,7 @@ def month_stats(message):
                 expense += tx["amount"]
 
     text = (
-        f"📅 Статистика месяца\n\n"
+        f"📅 Месяц\n\n"
         f"💰 Доходы: {income:.2f} р\n"
         f"💸 Расходы: {expense:.2f} р\n"
         f"📉 Итог: {(income-expense):.2f} р"
@@ -407,7 +710,7 @@ def today_stats(message):
 
     for tx in data["transactions"]:
 
-        if tx["date"] == today:
+        if today in tx["date"]:
 
             if tx["type"] == "income":
                 income += tx["amount"]
@@ -422,16 +725,6 @@ def today_stats(message):
     )
 
     bot.send_message(message.chat.id, text)
-
-
-@bot.message_handler(func=lambda m: m.text == "⬅️ Назад")
-def back(message):
-
-    bot.send_message(
-        message.chat.id,
-        "Главное меню",
-        reply_markup=main_keyboard()
-    )
 
 
 bot.remove_webhook()
