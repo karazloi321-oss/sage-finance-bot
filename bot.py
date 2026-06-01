@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, reques
 import telebot
 from telebot import types
 import os
@@ -55,6 +55,9 @@ data = load_data()
 
 @app.route("/", methods=["GET", "HEAD"])
 def home():
+
+    if os.environ.get("REQUEST_METHOD") == "HEAD":
+        return "", 200
 
     history_html = ""
 
