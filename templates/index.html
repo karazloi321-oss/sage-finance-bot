@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Sage Finance</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+</head>
+
+<body>
+
+<div class="app">
+
+    <h1>Sage Finance</h1>
+
+    <div class="card">
+
+        <h2>Баланс</h2>
+
+        <div id="balance">0 р</div>
+
+    </div>
+
+    <div class="buttons">
+
+        <button onclick="addExpense(10)">
+            -10
+        </button>
+
+        <button onclick="addExpense(20)">
+            -20
+        </button>
+
+        <button onclick="addExpense(50)">
+            -50
+        </button>
+
+    </div>
+
+    <div class="custom">
+
+        <input
+            type="number"
+            id="customAmount"
+            placeholder="Своя сумма"
+        >
+
+        <button onclick="customExpense()">
+            Добавить
+        </button>
+
+    </div>
+
+</div>
+
+<script src="/static/app.js"></script>
+
+</body>
+</html>
