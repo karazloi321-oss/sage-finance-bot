@@ -13,7 +13,6 @@ app = Flask(__name__)
 @app.route("/")
 def home():
 
-```
 return """
 <html>
 <head>
@@ -111,12 +110,10 @@ return """
 </body>
 </html>
 """
-```
 
 @bot.message_handler(commands=["start"])
 def start(message):
 
-```
 markup = types.ReplyKeyboardMarkup(
     resize_keyboard=True
 )
@@ -137,11 +134,9 @@ bot.send_message(
     "🚀 Sage Finance готов",
     reply_markup=markup
 )
-```
 
 def run_bot():
 
-```
 try:
 
     bot.remove_webhook()
@@ -153,11 +148,9 @@ try:
 except Exception as e:
 
     print(e)
-```
 
-if **name** == "**main**":
+if __name__ == "**main**":
 
-```
 threading.Thread(
     target=run_bot
 ).start()
