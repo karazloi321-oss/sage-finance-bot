@@ -19,14 +19,29 @@ def load_data():
 
     if not os.path.exists(DATA_FILE):
 
-        return {
+        default_data = {
             "balance": 0,
             "transactions": []
         }
 
-    with open(DATA_FILE, "r") as f:
+        with open(DATA_FILE, "w") as f:
 
-        return json.load(f)
+            json.dump(default_data, f)
+
+        return default_data
+
+    try:
+
+        with open(DATA_FILE, "r") as f:
+
+            return json.load(f)
+
+    except:
+
+        return {
+            "balance": 0,
+            "transactions": []
+        }
 
 
 def save_data(data):
@@ -213,6 +228,8 @@ def home():
 @app.route("/income/<amount>")
 def income(amount):
 
+    global data
+
     amount = int(amount)
 
     data["balance"] += amount
@@ -228,6 +245,8 @@ def income(amount):
 
 @app.route("/expense/<amount>")
 def expense(amount):
+
+    global data
 
     amount = int(amount)
 
