@@ -1,4 +1,3 @@
-```python id="9g3kfm"
 import telebot
 from telebot import types
 import json
@@ -14,16 +13,10 @@ DATA_FILE = "finance.json"
 
 PIN_CODE = "1111"
 
-
-FAST_AMOUNTS = [
-    "5",
-    "10",
-    "20",
-    "50"
-]
+LOW_BALANCE = 50
 
 
-CATEGORIES = {
+EXPENSE_CATEGORIES = {
     "🍔 Продукты": "Продукты",
     "🚌 Транспорт": "Транспорт",
     "☕ Кафе": "Кафе",
@@ -31,6 +24,22 @@ CATEGORIES = {
     "🎮 Игры": "Игры",
     "📱 Связь": "Связь"
 }
+
+
+INCOME_CATEGORIES = {
+    "💼 Зарплата": "Зарплата",
+    "💰 Доход": "Доход",
+    "🎁 Подарок": "Подарок"
+}
+
+
+FAST_AMOUNTS = [
+    "5",
+    "10",
+    "20",
+    "50",
+    "100"
+]
 
 
 def load_data():
@@ -54,7 +63,12 @@ def load_data():
 
 def save_data(data):
 
+    backup = f"backup_{datetime.now().strftime('%d_%m_%Y')}.json"
+
     with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+    with open(backup, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
@@ -69,10 +83,10 @@ def main_keyboard():
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
-    markup.add("➕ Добавить расход")
-    markup.add("💰 Баланс", "📊 Аналитика")
+    markup.add("💸 Расход", "💰 Доход")
+    markup.add("💳 Баланс", "📊 Аналитика")
     markup.add("🧾 История", "📋 Долги")
-    markup.add("📅 Месяц")
+    markup.add("📅 Месяц", "📈 Сегодня")
 
     return markup
 
@@ -82,7 +96,7 @@ def start(message):
 
     bot.send_message(
         message.chat.id,
-        "🔐 Введите PIN-код"
+        "🔐 Введите PIN"
     )
 
 
@@ -107,31 +121,87 @@ def auth(message):
         )
 
 
-@bot.message_handler(func=lambda m: m.text == "➕ Добавить расход")
-def choose_category(message):
+@bot.message_handler(func=lambda m: m.text == "💸 Расход")
+def expense_menu(message):
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
-    for cat in CATEGORIES.keys():
+    for cat in EXPENSE_CATEGORIES.keys():
         markup.add(cat)
 
     markup.add("⬅️ Назад")
 
+    user_states[message.chat.id] = {
+        "type": "expense"
+    }
+
     bot.send_message(
         message.chat.id,
-        "Выберите категорию:",
+        "Выберите категорию расхода:",
         reply_markup=markup
     )
 
 
-@bot.message_handler(func=lambda m: m.text in CATEGORIES.keys())
-def choose_amount(message):
+@bot.message_handler(func=lambda m: m.text == "💰 Доход")
+def income_menu(message):
 
-    category = CATEGORIES[message.text]
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+    for cat in INCOME_CATEGORIES.keys():
+        markup.add(cat)
+
+    markup.add("⬅️ Назад")
 
     user_states[message.chat.id] = {
-        "category": category
+        "type": "income"
     }
+
+    bot.send_message(
+        message.chat.id,
+        "Выберите категорию дохода:",
+        reply_markup=markup
+    )
+
+
+@bot.message_handler(
+    func=lambda m:
+    m.text in EXPENSE_CATEGORIES.keys()
+    or m.text in INCOME_CATEGORIES.keys()
+)
+def choose_method(message):
+
+    category = (
+        EXPENSE_CATEGORIES.get(message.text)
+        or INCOME_CATEGORIES.get(message.text)
+    )
+
+    user_states[message.chat.id]["category"] = category
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+    markup.add("💳 Карта", "💵 Наличные")
+    markup.add("⬅️ Назад")
+
+    bot.send_message(
+        message.chat.id,
+        "Выберите счет:",
+        reply_markup=markup
+    )
+
+
+@bot.message_handler(
+    func=lambda m:
+    m.text in ["💳 Карта", "💵 Наличные"]
+)
+def choose_amount(message):
+
+    method = (
+        "card"
+        if "Карта" in message.text
+        else "cash"
+    )
+
+    user_states[message.chat.id]["method"] = method
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
 
@@ -142,13 +212,13 @@ def choose_amount(message):
 
     bot.send_message(
         message.chat.id,
-        f"Категория: {category}\nВведите сумму:",
+        "Введите сумму:",
         reply_markup=markup
     )
 
 
 @bot.message_handler(func=lambda m: "р" in m.text)
-def save_fast_expense(message):
+def save_transaction(message):
 
     if message.chat.id not in user_states:
         return
@@ -159,29 +229,54 @@ def save_fast_expense(message):
             message.text.replace("р", "").strip()
         )
 
-        category = user_states[message.chat.id]["category"]
+        state = user_states[message.chat.id]
 
         transaction = {
-            "title": category,
+            "category": state["category"],
             "amount": amount,
-            "method": "карта",
-            "category": category,
-            "type": "expense",
+            "method": state["method"],
+            "type": state["type"],
             "date": datetime.now().strftime("%d.%m.%Y")
         }
 
         data["transactions"].insert(0, transaction)
 
-        data["card"] -= amount
+        if state["type"] == "expense":
+
+            if state["method"] == "card":
+                data["card"] -= amount
+            else:
+                data["cash"] -= amount
+
+        else:
+
+            if state["method"] == "card":
+                data["card"] += amount
+            else:
+                data["cash"] += amount
 
         save_data(data)
 
         del user_states[message.chat.id]
 
+        total = data["card"] + data["cash"]
+
+        text = (
+            f"✅ Операция добавлена\n\n"
+            f"📂 {transaction['category']}\n"
+            f"💵 {amount} р"
+        )
+
+        if total <= LOW_BALANCE:
+
+            text += (
+                f"\n\n⚠️ Низкий баланс!"
+                f"\nОсталось: {total:.2f} р"
+            )
+
         bot.send_message(
             message.chat.id,
-            f"✅ Добавлено\n\n"
-            f"{category}: {amount} р",
+            text,
             reply_markup=main_keyboard()
         )
 
@@ -193,7 +288,7 @@ def save_fast_expense(message):
         )
 
 
-@bot.message_handler(func=lambda m: m.text == "💰 Баланс")
+@bot.message_handler(func=lambda m: m.text == "💳 Баланс")
 def balance(message):
 
     total = data["card"] + data["cash"]
@@ -210,17 +305,15 @@ def balance(message):
 @bot.message_handler(func=lambda m: m.text == "📋 Долги")
 def debts(message):
 
-    text = "📋 Долги:\n\n"
+    total = sum(data["debts"].values())
 
-    total = 0
+    text = "📋 Долги:\n\n"
 
     for name, amount in data["debts"].items():
 
         text += f"{name}: {amount} р\n"
 
-        total += amount
-
-    text += f"\nОбщий долг: {total} р"
+    text += f"\n💸 Всего долгов: {total} р"
 
     bot.send_message(message.chat.id, text)
 
@@ -230,10 +323,15 @@ def history(message):
 
     text = "🧾 Последние операции:\n\n"
 
-    for tx in data["transactions"][:15]:
+    for tx in data["transactions"][:20]:
+
+        emoji = "💸"
+
+        if tx["type"] == "income":
+            emoji = "💰"
 
         text += (
-            f"{tx['date']} | "
+            f"{emoji} {tx['date']} | "
             f"{tx['category']} | "
             f"{tx['amount']} р\n"
         )
@@ -290,7 +388,34 @@ def month_stats(message):
                 expense += tx["amount"]
 
     text = (
-        f"📅 Месяц\n\n"
+        f"📅 Статистика месяца\n\n"
+        f"💰 Доходы: {income:.2f} р\n"
+        f"💸 Расходы: {expense:.2f} р\n"
+        f"📉 Итог: {(income-expense):.2f} р"
+    )
+
+    bot.send_message(message.chat.id, text)
+
+
+@bot.message_handler(func=lambda m: m.text == "📈 Сегодня")
+def today_stats(message):
+
+    today = datetime.now().strftime("%d.%m.%Y")
+
+    income = 0
+    expense = 0
+
+    for tx in data["transactions"]:
+
+        if tx["date"] == today:
+
+            if tx["type"] == "income":
+                income += tx["amount"]
+            else:
+                expense += tx["amount"]
+
+    text = (
+        f"📈 Сегодня\n\n"
         f"💰 Доходы: {income:.2f} р\n"
         f"💸 Расходы: {expense:.2f} р\n"
         f"📉 Итог: {(income-expense):.2f} р"
@@ -318,4 +443,3 @@ bot.infinity_polling(
     long_polling_timeout=30,
     skip_pending=True
 )
-```
