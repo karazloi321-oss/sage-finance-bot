@@ -29,7 +29,7 @@ return
         body{
             background:
             font-family:sans-serif;
-            padding:20px;
+            padding:20 px;
             text-align:center;
         }
 
