@@ -1,8 +1,9 @@
 from flask import Flask
 import telebot
 from telebot import types
-import threading
 import os
+import threading
+import time
 
 TOKEN = os.getenv("TOKEN")
 
@@ -33,62 +34,39 @@ def home():
         <style>
 
             body{
-
                 margin:0;
                 padding:20px;
-
                 background:#d9e5d6;
-
                 font-family:sans-serif;
             }
 
             .card{
-
                 background:white;
-
                 border-radius:24px;
-
                 padding:25px;
-
                 max-width:400px;
-
                 margin:auto;
-
-                box-shadow:0 4px 12px rgba(0,0,0,0.1);
             }
 
             h1{
-
                 text-align:center;
             }
 
             .balance{
-
                 font-size:42px;
-
-                font-weight:bold;
-
                 text-align:center;
-
+                font-weight:bold;
                 margin:25px 0;
             }
 
             button{
-
                 width:100%;
-
                 border:none;
-
                 border-radius:18px;
-
                 padding:18px;
-
                 margin-top:12px;
-
                 background:#7c9b76;
-
                 color:white;
-
                 font-size:20px;
             }
 
@@ -180,17 +158,32 @@ def start(message):
 
 def run_bot():
 
-    bot.remove_webhook()
+    while True:
 
-    bot.infinity_polling(
-        skip_pending=True
-    )
+        try:
+
+            bot.remove_webhook()
+
+            time.sleep(2)
+
+            bot.infinity_polling(
+                timeout=30,
+                long_polling_timeout=30,
+                skip_pending=True
+            )
+
+        except Exception as e:
+
+            print(e)
+
+            time.sleep(5)
 
 
 if __name__ == "__main__":
 
     threading.Thread(
-        target=run_bot
+        target=run_bot,
+        daemon=True
     ).start()
 
     app.run(
