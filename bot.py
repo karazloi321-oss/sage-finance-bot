@@ -35,11 +35,11 @@ return
 
         .card{
             background:white;
-            padding:25px;
-            border-radius:20px;
-            max-width:400px;
+            padding:25 px;
+            border-radius:20 px;
+            max-width:400 px;
             margin:auto;
-            box-shadow:0 4px 10px rgba(0,0,0,0.1);
+            box-shadow:0 4 pz 10 px rgba(0,0,0,0.1);
         }
 
         h1{
@@ -47,20 +47,20 @@ return
         }
 
         .balance{
-            font-size:40px;
-            margin:20px 0;
+            font-size:40 px;
+            margin:20 px 0;
             font-weight:bold;
         }
 
         button{
             width:100%;
-            padding:18px;
+            padding:18 px;
             border:none;
-            border-radius:16px;
+            border-radius:16 px;
             background:#7c9b76;
             color:white;
-            font-size:20px;
-            margin-top:12px;
+            font-size:20 px;
+            margin-top:12 px;
         }
 
     </style>
