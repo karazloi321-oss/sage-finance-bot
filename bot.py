@@ -27,7 +27,7 @@ return
     <style>
 
         body{
-            background:#d9e5d6;
+            background:
             font-family:sans-serif;
             padding:20px;
             text-align:center;
