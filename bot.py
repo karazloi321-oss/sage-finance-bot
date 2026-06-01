@@ -12,17 +12,19 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def index():
+def home():
     return render_template("index.html")
 
 
 @bot.message_handler(commands=["start"])
 def start(message):
 
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    markup = types.ReplyKeyboardMarkup(
+        resize_keyboard=True
+    )
 
     webapp = types.WebAppInfo(
-        "https://YOUR-RAILWAY-URL.up.railway.app"
+        "https://ТВОЙ-RENDER-URL.onrender.com"
     )
 
     button = types.KeyboardButton(
@@ -34,7 +36,7 @@ def start(message):
 
     bot.send_message(
         message.chat.id,
-        "🚀 Sage Finance Mini App",
+        "🚀 Sage Finance",
         reply_markup=markup
     )
 
@@ -47,14 +49,3 @@ def run_bot():
 
 
 threading.Thread(target=run_bot).start()
-
-
-if __name__ == "__main__":
-
-    app.run(
-        host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000))
-    )
-webapp = types.WebAppInfo(
-    "https://sage-finance.onrender.com"
-)
