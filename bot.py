@@ -331,19 +331,17 @@ bot.infinity_polling(
     long_polling_timeout=5,
     skip_pending=True
 )
-
-import os
-
 bot.remove_webhook()
 
-time.sleep(3)
+time.sleep(5)
 
-if os.environ.get("RAILWAY_REPLICA_ID", "0") == "0":
+bot.delete_webhook()
 
-    bot.infinity_polling(
-        timeout=10,
-        long_polling_timeout=5,
-        skip_pending=True
-    )
+time.sleep(5)
 
+bot.infinity_polling(
+    timeout=30,
+    long_polling_timeout=30,
+    skip_pending=True
+)
 
