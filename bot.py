@@ -74,19 +74,19 @@ return
         <h1>Sage Finance</h1>
 
         <div class="balance">
-            0 ₽
+            0 P
         </div>
 
         <button onclick="minus(10)">
-            -10 ₽
+            -10 P
         </button>
 
         <button onclick="minus(50)">
-            -50 ₽
+            -50 P
         </button>
 
         <button onclick="minus(100)">
-            -100 ₽
+            -100 P
         </button>
 
     </div>
@@ -102,7 +102,7 @@ return
             document.querySelector(
                 ".balance"
             ).innerHTML =
-                balance + " ₽"
+                balance + " P"
         }
 
     </script>
