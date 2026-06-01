@@ -10,154 +10,251 @@ bot = telebot.TeleBot(TOKEN)
 
 app = Flask(__name__)
 
+
 @app.route("/")
-def home ();
-return
-<html>
-<head>
+def home():
 
-    <title>Sage Finance</title>
+    return """
+    <!DOCTYPE html>
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"
-    >
+    <html lang="ru">
 
-    <style>
+    <head>
 
-        body{
-            background:
-            font-family:sans-serif;
-            padding:20 px;
-            text-align:center;
-        }
+        <meta charset="UTF-8">
 
-        .card{
-            background:white;
-            padding:25 px;
-            border-radius:20 px;
-            max-width:400 px;
-            margin:auto;
-            box-shadow:0 4 pz 10 px rgba(0,0,0,0.1);
-        }
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        >
 
-        h1{
-            color:#1f2a1f;
-        }
+        <title>Sage Finance</title>
 
-        .balance{
-            font-size:40 px;
-            margin:20 px 0;
-            font-weight:bold;
-        }
+        <style>
 
-        button{
-            width:100%;
-            padding:18 px;
-            border:none;
-            border-radius:16 px;
-            background:#7c9b76;
-            color:white;
-            font-size:20 px;
-            margin-top:12 px;
-        }
+            body{
 
-    </style>
+                margin:0;
+                padding:20px;
 
-</head>
+                background:#d9e5d6;
 
-<body>
+                font-family:sans-serif;
 
-    <div class="card">
+                color:#1f2a1f;
+            }
 
-        <h1>Sage Finance</h1>
+            .card{
 
-        <div class="balance">
-            0 P
+                background:white;
+
+                border-radius:24px;
+
+                padding:25px;
+
+                max-width:400px;
+
+                margin:auto;
+
+                box-shadow:0 4px 12px rgba(0,0,0,0.1);
+            }
+
+            h1{
+
+                text-align:center;
+
+                margin-top:0;
+            }
+
+            .balance{
+
+                font-size:42px;
+
+                text-align:center;
+
+                font-weight:bold;
+
+                margin:25px 0;
+            }
+
+            button{
+
+                width:100%;
+
+                border:none;
+
+                border-radius:18px;
+
+                padding:18px;
+
+                margin-top:12px;
+
+                font-size:20px;
+
+                background:#7c9b76;
+
+                color:white;
+            }
+
+            input{
+
+                width:100%;
+
+                border:none;
+
+                border-radius:18px;
+
+                padding:18px;
+
+                margin-top:15px;
+
+                font-size:18px;
+
+                box-sizing:border-box;
+            }
+
+        </style>
+
+    </head>
+
+    <body>
+
+        <div class="card">
+
+            <h1>Sage Finance</h1>
+
+            <div
+                class="balance"
+                id="balance"
+            >
+                0 ₽
+            </div>
+
+            <button onclick="minus(10)">
+                -10 ₽
+            </button>
+
+            <button onclick="minus(50)">
+                -50 ₽
+            </button>
+
+            <button onclick="minus(100)">
+                -100 ₽
+            </button>
+
+            <input
+                type="number"
+                id="amount"
+                placeholder="Своя сумма"
+            >
+
+            <button onclick="customMinus()">
+                Добавить расход
+            </button>
+
         </div>
 
-        <button onclick="minus(10)">
-            -10 P
-        </button>
+        <script>
 
-        <button onclick="minus(50)">
-            -50 P
-        </button>
+            let balance = 0
 
-        <button onclick="minus(100)">
-            -100 P
-        </button>
+            const balanceElement =
+                document.getElementById(
+                    "balance"
+                )
 
-    </div>
+            function updateBalance(){
 
-    <script>
+                balanceElement.innerHTML =
+                    balance + " ₽"
+            }
 
-        let balance = 0
+            function minus(amount){
 
-        function minus(amount){
+                balance -= amount
 
-            balance -= amount
+                updateBalance()
+            }
 
-            document.querySelector(
-                ".balance"
-            ).innerHTML =
-                balance + " P"
-        }
+            function customMinus(){
 
-    </script>
+                const input =
+                    document.getElementById(
+                        "amount"
+                    )
 
-</body>
-</html>
+                const amount =
+                    Number(input.value)
+
+                if(!amount) return
+
+                balance -= amount
+
+                input.value = ""
+
+                updateBalance()
+            }
+
+        </script>
+
+    </body>
+
+    </html>
+    """
+
+
 @bot.message_handler(commands=["start"])
 def start(message):
 
-markup = types.ReplyKeyboardMarkup(
-    resize_keyboard=True
-)
+    markup = types.ReplyKeyboardMarkup(
+        resize_keyboard=True
+    )
 
-webapp = types.WebAppInfo(
-    "https://sage-finance.onrender.com"
-)
+    webapp = types.WebAppInfo(
+        "https://sage-finance.onrender.com/"
+    )
 
-button = types.KeyboardButton(
-    "📱 Открыть Sage Finance"
-    web_app=webapp
-)
+    button = types.KeyboardButton(
+        "📱 Открыть Sage Finance",
+        web_app=webapp
+    )
 
-markup.add(button)
+    markup.add(button)
 
-bot.send_message(
-    message.chat.id,
-    "🚀 Sage Finance готов"
-    reply_markup=markup
-)
+    bot.send_message(
+        message.chat.id,
+        "🚀 Sage Finance готов",
+        reply_markup=markup
+    )
+
 
 def run_bot():
 
-try:
+    try:
 
-    bot.remove_webhook()
+        bot.remove_webhook()
 
-    bot.infinity_polling(
-        skip_pending=True
-    )
+        bot.infinity_polling(
+            skip_pending=True
+        )
 
-except Exception as e:
+    except Exception as e:
 
-    print(e)
+        print(e)
 
-if __name__ == "**main**":
 
-threading.Thread(
-    target=run_bot
-).start()
+if __name__ == "__main__":
 
-app.run(
-    host="0.0.0.0"
-    port=int(
-        os.environ.get(
-            "PORT"
-            10000
+    threading.Thread(
+        target=run_bot
+    ).start()
+
+    app.run(
+        host="0.0.0.0",
+        port=int(
+            os.environ.get(
+                "PORT",
+                10000
+            )
         )
     )
-)
