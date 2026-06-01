@@ -109,7 +109,6 @@ return
 
 </body>
 </html>
-"""
 
 @bot.message_handler(commands=["start"])
 def start(message):
