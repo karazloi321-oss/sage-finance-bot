@@ -321,21 +321,17 @@ def parse_message(message):
             message.chat.id,
             "⚠️ Ошибка ввода"
         )
+id="3e5n2j"
+bot.remove_webhook()
+
+time.sleep(2)
+
+bot.infinity_polling(
+    timeout=10,
+    long_polling_timeout=5,
+    skip_pending=True
+)
 
 
-while True:
 
-    try:
-
-        bot.infinity_polling(
-            timeout=10,
-            long_polling_timeout=5,
-            skip_pending=True
-        )
-
-    except Exception as e:
-
-        print(e)
-
-        time.sleep(5)
 
