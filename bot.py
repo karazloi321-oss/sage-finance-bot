@@ -39,13 +39,23 @@ def start(message):
         "🚀 Sage Finance",
         reply_markup=markup
     )
-
-
 def run_bot():
 
-    bot.remove_webhook()
+    try:
 
-    bot.infinity_polling()
+        bot.remove_webhook()
+
+        bot.infinity_polling(
+            skip_pending=True
+        )
+
+    except Exception as e:
+
+        print(e)
 
 
-threading.Thread(target=run_bot).start()
+if __name__ == "__main__":
+
+    threading.Thread(
+        target=run_bot
+    ).start()
