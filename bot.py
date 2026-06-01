@@ -53,8 +53,7 @@ def save_data(data):
 
 data = load_data()
 
-
-@app.route("/")
+@app.route("/", methods=["GET", "HEAD"])
 def home():
 
     history_html = ""
