@@ -287,160 +287,165 @@ def home():
 
         <style>
 
-            *{{
-                box-sizing:border-box;
-            }}
+            *{
+    box-sizing:border-box;
+}
 
-            body{{
-                margin:0;
-                background:#0f1115;
-                color:white;
-                font-family:sans-serif;
-            }}
+body{
+    margin:0;
+    background:#0f1115;
+    color:white;
+    font-family:sans-serif;
+}
 
-            .container{{
-                max-width:520px;
-                margin:auto;
-                padding:20px;
-            }}
+.container{
+    max-width:520px;
+    margin:auto;
+    padding:14px;
+}
 
-            .header{{
-                font-size:32px;
-                font-weight:bold;
-                margin-bottom:20px;
-            }}
+.header{
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:14px;
+}
 
-            .balance-card{{
-                background:linear-gradient(
-                    135deg,
-                    #1f8bff,
-                    #6c63ff
-                );
-                border-radius:28px;
-                padding:28px;
-                margin-bottom:20px;
-            }}
+.balance-card{
+    background:linear-gradient(
+        135deg,
+        #1f8bff,
+        #6c63ff
+    );
+    border-radius:22px;
+    padding:20px;
+    margin-bottom:14px;
+}
 
-            .balance-label{{
-                opacity:0.8;
-                font-size:16px;
-            }}
+.balance-label{
+    opacity:0.8;
+    font-size:13px;
+}
 
-            .balance{{
-                font-size:44px;
-                font-weight:bold;
-                margin-top:10px;
-            }}
+.balance{
+    font-size:34px;
+    font-weight:bold;
+    margin-top:6px;
+}
 
-            .stats{{
-                display:flex;
-                gap:12px;
-                margin-top:20px;
-            }}
+.stats{
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+}
 
-            .stat{{
-                flex:1;
-                padding:14px;
-                border-radius:18px;
-                text-align:center;
-            }}
+.stat{
+    flex:1;
+    padding:10px;
+    border-radius:14px;
+    text-align:center;
+    font-size:13px;
+}
 
-            .income{{
-                background:#143d1f;
-            }}
+.income{
+    background:#143d1f;
+}
 
-            .expense{{
-                background:#4a1717;
-            }}
+.expense{
+    background:#4a1717;
+}
 
-            .card{{
-                background:#1a1d24;
-                border-radius:24px;
-                padding:20px;
-                margin-top:20px;
-            }}
+.card{
+    background:#1a1d24;
+    border-radius:18px;
+    padding:14px;
+    margin-top:14px;
+}
 
-            h2{{
-                margin-top:0;
-            }}
+h2{
+    margin-top:0;
+    font-size:18px;
+}
 
-            input, select{{
-                width:100%;
-                padding:16px;
-                margin-top:12px;
-                border:none;
-                border-radius:16px;
-                background:#2a2f3a;
-                color:white;
-                font-size:16px;
-            }}
+input, select{
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border:none;
+    border-radius:12px;
+    background:#2a2f3a;
+    color:white;
+    box-sizing:border-box;
+    font-size:14px;
+}
 
-            button{{
-                width:100%;
-                padding:16px;
-                border:none;
-                border-radius:16px;
-                margin-top:12px;
-                font-size:17px;
-                font-weight:bold;
-                color:white;
-            }}
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    margin-top:8px;
+    font-size:14px;
+    font-weight:bold;
+    color:white;
+}
 
-            .income-btn{{
-                background:#4caf50;
-            }}
+.income-btn{
+    background:#4caf50;
+}
 
-            .expense-btn{{
-                background:#ff5252;
-            }}
+.expense-btn{
+    background:#ff5252;
+}
 
-            .transaction{{
-                background:#232833;
-                border-radius:18px;
-                padding:16px;
-                margin-top:12px;
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-            }}
+.transaction{
+    background:#232833;
+    border-radius:14px;
+    padding:12px;
+    margin-top:8px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
 
-            .transaction-title{{
-                font-weight:bold;
-            }}
+.transaction-title{
+    font-weight:bold;
+    font-size:14px;
+}
 
-            .transaction-account{{
-                opacity:0.7;
-                margin-top:4px;
-                font-size:14px;
-            }}
+.transaction-account{
+    opacity:0.7;
+    margin-top:2px;
+    font-size:11px;
+}
 
-            .transaction-amount{{
-                font-weight:bold;
-                font-size:18px;
-            }}
+.transaction-amount{
+    font-weight:bold;
+    font-size:15px;
+}
 
-            .analytics-item{{
-                margin-top:16px;
-            }}
+.analytics-item{
+    margin-top:12px;
+}
 
-            .analytics-top{{
-                display:flex;
-                justify-content:space-between;
-                margin-bottom:8px;
-            }}
+.analytics-top{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:5px;
+    font-size:13px;
+}
 
-            .bar-bg{{
-                width:100%;
-                height:14px;
-                background:#2a2f3a;
-                border-radius:20px;
-                overflow:hidden;
-            }}
+.bar-bg{
+    width:100%;
+    height:10px;
+    background:#2a2f3a;
+    border-radius:20px;
+    overflow:hidden;
+}
 
-            .bar{{
-                height:100%;
-                background:#4caf50;
-            }}
+.bar{
+    height:100%;
+    background:#4caf50;
+}
 
         </style>
 
