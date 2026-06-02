@@ -4,7 +4,7 @@ from telebot import types
 import os
 import threading
 import time
-import json
+import sqlite3
 
 TOKEN = os.getenv("TOKEN")
 
@@ -12,46 +12,138 @@ app = Flask(__name__)
 
 bot = telebot.TeleBot(TOKEN)
 
-DATA_FILE = "finance.json"
+DB_FILE = "finance.db"
 
 
-def load_data():
+def init_db():
 
-    if not os.path.exists(DATA_FILE):
+    conn = sqlite3.connect(DB_FILE)
 
-        default_data = {
-            "balance": 0,
-            "transactions": []
-        }
+    cursor = conn.cursor()
 
-        with open(DATA_FILE, "w") as f:
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users(
+        user_id INTEGER PRIMARY KEY,
+        balance INTEGER DEFAULT 0
+    )
+    """)
 
-            json.dump(default_data, f)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS transactions(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        type TEXT,
+        category TEXT,
+        amount INTEGER
+    )
+    """)
 
-        return default_data
+    conn.commit()
 
-    try:
-
-        with open(DATA_FILE, "r") as f:
-
-            return json.load(f)
-
-    except:
-
-        return {
-            "balance": 0,
-            "transactions": []
-        }
-
-
-def save_data(data):
-
-    with open(DATA_FILE, "w") as f:
-
-        json.dump(data, f)
+    conn.close()
 
 
-data = load_data()
+init_db()
+
+
+def get_balance(user_id):
+
+    conn = sqlite3.connect(DB_FILE)
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT balance FROM users WHERE user_id=?",
+        (user_id,)
+    )
+
+    row = cursor.fetchone()
+
+    if row is None:
+
+        cursor.execute(
+            "INSERT INTO users(user_id,balance) VALUES(?,?)",
+            (user_id, 0)
+        )
+
+        conn.commit()
+
+        balance = 0
+
+    else:
+
+        balance = row[0]
+
+    conn.close()
+
+    return balance
+
+
+def update_balance(user_id, amount):
+
+    conn = sqlite3.connect(DB_FILE)
+
+    cursor = conn.cursor()
+
+    balance = get_balance(user_id)
+
+    new_balance = balance + amount
+
+    cursor.execute(
+        "UPDATE users SET balance=? WHERE user_id=?",
+        (new_balance, user_id)
+    )
+
+    conn.commit()
+
+    conn.close()
+
+
+def add_transaction(user_id, ttype, category, amount):
+
+    conn = sqlite3.connect(DB_FILE)
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    INSERT INTO transactions(
+        user_id,
+        type,
+        category,
+        amount
+    )
+    VALUES(?,?,?,?)
+    """, (
+        user_id,
+        ttype,
+        category,
+        amount
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+
+def get_transactions(user_id):
+
+    conn = sqlite3.connect(DB_FILE)
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    SELECT type, category, amount
+    FROM transactions
+    WHERE user_id=?
+    ORDER BY id DESC
+    LIMIT 10
+    """, (user_id,))
+
+    rows = cursor.fetchall()
+
+    conn.close()
+
+    return rows
 
 
 @app.route("/", methods=["GET", "HEAD"])
@@ -61,25 +153,57 @@ def home():
 
         return "", 200
 
-    balance = data.get("balance", 0)
+    user_id = request.args.get(
+        "user_id",
+        "1"
+    )
+
+    balance = get_balance(user_id)
+
+    transactions = get_transactions(user_id)
 
     history_html = ""
 
-    for item in reversed(
-        data.get(
-            "transactions",
-            []
-        )[-10:]
-    ):
+    income_total = 0
+    expense_total = 0
+
+    for ttype, category, amount in transactions:
+
+        if ttype == "income":
+
+            emoji = "➕"
+            color = "#2e7d32"
+
+            income_total += amount
+
+        else:
+
+            emoji = "➖"
+            color = "#c62828"
+
+            expense_total += amount
 
         history_html += f"""
 
         <div class="item">
 
-            {item}
+            <div>
+
+                {emoji}
+                {category}
+
+            </div>
+
+            <div style="
+                color:{color};
+                font-weight:bold;
+            ">
+
+                {amount} ₽
+
+            </div>
 
         </div>
-
         """
 
     return f"""
@@ -114,7 +238,7 @@ def home():
                 background:white;
                 border-radius:24px;
                 padding:25px;
-                max-width:450px;
+                max-width:480px;
                 margin:auto;
             }}
 
@@ -129,17 +253,41 @@ def home():
                 margin:25px 0;
             }}
 
+            .stats{{
+                display:flex;
+                gap:10px;
+                margin-bottom:20px;
+            }}
+
+            .stat{{
+                flex:1;
+                padding:14px;
+                border-radius:16px;
+                color:white;
+                text-align:center;
+                font-weight:bold;
+            }}
+
+            .income{{
+                background:#2e7d32;
+            }}
+
+            .expense{{
+                background:#c62828;
+            }}
+
             form{{
                 margin-top:15px;
             }}
 
-            input{{
+            input, select{{
                 width:100%;
                 padding:18px;
                 border:none;
                 border-radius:18px;
                 box-sizing:border-box;
                 font-size:18px;
+                margin-top:10px;
             }}
 
             button{{
@@ -158,6 +306,8 @@ def home():
                 padding:12px;
                 border-radius:12px;
                 margin-top:10px;
+                display:flex;
+                justify-content:space-between;
             }}
 
         </style>
@@ -178,7 +328,31 @@ def home():
 
             </div>
 
+            <div class="stats">
+
+                <div class="stat income">
+
+                    Доход<br>
+                    {income_total} ₽
+
+                </div>
+
+                <div class="stat expense">
+
+                    Расход<br>
+                    {expense_total} ₽
+
+                </div>
+
+            </div>
+
             <form action="/income">
+
+                <input
+                    type="hidden"
+                    name="user_id"
+                    value="{user_id}"
+                >
 
                 <input
                     type="number"
@@ -186,6 +360,22 @@ def home():
                     placeholder="Сумма дохода"
                     required
                 >
+
+                <select name="category">
+
+                    <option>
+                        💼 Зарплата
+                    </option>
+
+                    <option>
+                        💰 Подработка
+                    </option>
+
+                    <option>
+                        📦 Другое
+                    </option>
+
+                </select>
 
                 <button type="submit">
 
@@ -198,11 +388,41 @@ def home():
             <form action="/expense">
 
                 <input
+                    type="hidden"
+                    name="user_id"
+                    value="{user_id}"
+                >
+
+                <input
                     type="number"
                     name="amount"
                     placeholder="Сумма расхода"
                     required
                 >
+
+                <select name="category">
+
+                    <option>
+                        🍔 Еда
+                    </option>
+
+                    <option>
+                        🚕 Транспорт
+                    </option>
+
+                    <option>
+                        🛍 Покупки
+                    </option>
+
+                    <option>
+                        🎮 Развлечения
+                    </option>
+
+                    <option>
+                        📦 Другое
+                    </option>
+
+                </select>
 
                 <button type="submit">
 
@@ -229,7 +449,10 @@ def home():
 @app.route("/income")
 def income():
 
-    global data
+    user_id = request.args.get(
+        "user_id",
+        "1"
+    )
 
     amount = int(
         request.args.get(
@@ -238,23 +461,33 @@ def income():
         )
     )
 
-    data["balance"] += amount
-
-    data["transactions"].append(
-        f"➕ Доход: {amount} ₽"
+    category = request.args.get(
+        "category",
+        "Доход"
     )
 
-    save_data(data)
+    update_balance(user_id, amount)
 
-    return """
-    <meta http-equiv="refresh" content="0; url=/">
+    add_transaction(
+        user_id,
+        "income",
+        category,
+        amount
+    )
+
+    return f"""
+    <meta http-equiv="refresh"
+    content="0; url=/?user_id={user_id}">
     """
 
 
 @app.route("/expense")
 def expense():
 
-    global data
+    user_id = request.args.get(
+        "user_id",
+        "1"
+    )
 
     amount = int(
         request.args.get(
@@ -263,16 +496,23 @@ def expense():
         )
     )
 
-    data["balance"] -= amount
-
-    data["transactions"].append(
-        f"➖ Расход: {amount} ₽"
+    category = request.args.get(
+        "category",
+        "Расход"
     )
 
-    save_data(data)
+    update_balance(user_id, -amount)
 
-    return """
-    <meta http-equiv="refresh" content="0; url=/">
+    add_transaction(
+        user_id,
+        "expense",
+        category,
+        amount
+    )
+
+    return f"""
+    <meta http-equiv="refresh"
+    content="0; url=/?user_id={user_id}">
     """
 
 
@@ -284,7 +524,7 @@ def start(message):
     )
 
     web_app = types.WebAppInfo(
-        "https://sage-finance.onrender.com/"
+        f"https://sage-finance.onrender.com/?user_id={message.from_user.id}"
     )
 
     button = types.KeyboardButton(
