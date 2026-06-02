@@ -136,7 +136,7 @@ def get_transactions(user_id):
     FROM transactions
     WHERE user_id=?
     ORDER BY id DESC
-    LIMIT 10
+    LIMIT 15
     """, (user_id,))
 
     rows = cursor.fetchall()
@@ -167,21 +167,29 @@ def home():
     income_total = 0
     expense_total = 0
 
+    categories = {}
+
     for ttype, category, amount in transactions:
 
         if ttype == "income":
 
             emoji = "➕"
-            color = "#2e7d32"
+            color = "#4caf50"
 
             income_total += amount
 
         else:
 
             emoji = "➖"
-            color = "#c62828"
+            color = "#ff5252"
 
             expense_total += amount
+
+            if category not in categories:
+
+                categories[category] = 0
+
+            categories[category] += amount
 
         history_html += f"""
 
@@ -201,6 +209,35 @@ def home():
 
                 {amount} ₽
 
+            </div>
+
+        </div>
+        """
+
+    analytics_html = ""
+
+    for category, amount in categories.items():
+
+        width = min(amount / 10, 100)
+
+        analytics_html += f"""
+
+        <div class="analytics-item">
+
+            <div class="analytics-name">
+                {category}
+            </div>
+
+            <div class="bar-bg">
+
+                <div class="bar"
+                    style="width:{width}%">
+                </div>
+
+            </div>
+
+            <div>
+                {amount} ₽
             </div>
 
         </div>
@@ -230,27 +267,28 @@ def home():
             body{{
                 margin:0;
                 padding:20px;
-                background:#d9e5d6;
+                background:#121212;
+                color:white;
                 font-family:sans-serif;
             }}
 
             .card{{
-                background:white;
+                background:#1e1e1e;
                 border-radius:24px;
                 padding:25px;
-                max-width:480px;
+                max-width:500px;
                 margin:auto;
             }}
 
-            h1{{
+            h1,h2{{
                 text-align:center;
             }}
 
             .balance{{
-                font-size:42px;
+                font-size:48px;
                 font-weight:bold;
                 text-align:center;
-                margin:25px 0;
+                margin:30px 0;
             }}
 
             .stats{{
@@ -261,23 +299,18 @@ def home():
 
             .stat{{
                 flex:1;
-                padding:14px;
-                border-radius:16px;
-                color:white;
+                padding:15px;
+                border-radius:18px;
                 text-align:center;
                 font-weight:bold;
             }}
 
             .income{{
-                background:#2e7d32;
+                background:#1b5e20;
             }}
 
             .expense{{
-                background:#c62828;
-            }}
-
-            form{{
-                margin-top:15px;
+                background:#b71c1c;
             }}
 
             input, select{{
@@ -285,9 +318,11 @@ def home():
                 padding:18px;
                 border:none;
                 border-radius:18px;
+                margin-top:10px;
+                background:#2a2a2a;
+                color:white;
                 box-sizing:border-box;
                 font-size:18px;
-                margin-top:10px;
             }}
 
             button{{
@@ -295,19 +330,40 @@ def home():
                 padding:18px;
                 border:none;
                 border-radius:18px;
-                background:#7c9b76;
+                background:#4caf50;
                 color:white;
                 font-size:18px;
                 margin-top:10px;
             }}
 
             .item{{
-                background:#f2f2f2;
-                padding:12px;
-                border-radius:12px;
+                background:#2a2a2a;
+                padding:14px;
+                border-radius:14px;
                 margin-top:10px;
                 display:flex;
                 justify-content:space-between;
+            }}
+
+            .analytics-item{{
+                margin-top:15px;
+            }}
+
+            .analytics-name{{
+                margin-bottom:5px;
+            }}
+
+            .bar-bg{{
+                width:100%;
+                height:14px;
+                background:#2a2a2a;
+                border-radius:20px;
+                overflow:hidden;
+            }}
+
+            .bar{{
+                height:100%;
+                background:#4caf50;
             }}
 
         </style>
@@ -431,6 +487,12 @@ def home():
                 </button>
 
             </form>
+
+            <h2>
+                Аналитика
+            </h2>
+
+            {analytics_html}
 
             <h2>
                 История
