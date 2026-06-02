@@ -1,330 +1,440 @@
-from flask import Flask, request
-import telebot
-from telebot import types
-import os
-import threading
-import time
-import json
+from flask import Flask, requestimport telebotfrom telebot import typesimport osimport threadingimport timeimport json
 
 TOKEN = os.getenv("TOKEN")
 
-app = Flask(__name__)
+app = Flask(name)
 
 bot = telebot.TeleBot(TOKEN)
 
 DATA_FILE = "finance.json"
 
-
 def load_data():
 
-    if not os.path.exists(DATA_FILE):
+if not os.path.exists(DATA_FILE):
 
-        default_data = {
-            "balance": 0,
-            "transactions": []
-        }
-
-        with open(DATA_FILE, "w") as f:
-
-            json.dump(default_data, f)
-
-        return default_data
-
-    try:
-
-        with open(DATA_FILE, "r") as f:
-
-            return json.load(f)
-
-    except:
-
-        return {
-            "balance": 0,
-            "transactions": []
-        }
-
-
-def save_data(data):
+    default_data = {
+        "balance": 0,
+        "transactions": []
+    }
 
     with open(DATA_FILE, "w") as f:
 
-        json.dump(data, f)
+        json.dump(default_data, f)
 
+    return default_data
+
+try:
+
+    with open(DATA_FILE, "r") as f:
+
+        return json.load(f)
+
+except:
+
+    return {
+        "balance": 0,
+        "transactions": []
+    }
+
+def save_data(data):
+
+with open(DATA_FILE, "w") as f:
+
+    json.dump(data, f)
 
 data = load_data()
-@app.route("/", methods=["GET", "HEAD"])
-def home():
 
-    if request.method == "HEAD":
+@app.route("/", methods=["GET", "HEAD"])def home():
 
-        return "", 200
+if request.method == "HEAD":
 
-    try:
+    return "", 200
 
-        balance = data.get("balance", 0)
+balance = data.get("balance", 0)
 
-        transactions = data.get(
-            "transactions",
-            []
-        )
+transactions = data.get(
+    "transactions",
+    []
+)
 
-        history_html = ""
+income_total = 0
+expense_total = 0
 
-        for item in reversed(
-            transactions[-10:]
-        ):
+history_html = ""
 
-            history_html += f"""
-            <div class='item'>
-                {item}
-            </div>
-            """
+for item in reversed(transactions[-15:]):
 
-    except Exception as e:
+    if item["type"] == "income":
 
-        return str(e)
+        income_total += item["amount"]
 
-    return f"""
+        color = "#2e7d32"
+        emoji = "➕"
 
-    <html>
+    else:
 
-    <head>
+        expense_total += item["amount"]
 
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1"
-        >
+        color = "#c62828"
+        emoji = "➖"
 
-        <style>
+    history_html += f"""
 
-            body{{
-                background:#d9e5d6;
-                font-family:sans-serif;
-                padding:20px;
-            }}
+    <div class="item">
 
-            .card{{
-                background:white;
-                padding:25px;
-                border-radius:24px;
-                max-width:450px;
-                margin:auto;
-            }}
+        <div>
+            {emoji}
+            {item["category"]}
+        </div>
 
-            .balance{{
-                font-size:42px;
-                font-weight:bold;
-                text-align:center;
-                margin:20px 0;
-            }}
+        <div style="
+            color:{color};
+            font-weight:bold;
+        ">
+            {item["amount"]} ₽
+        </div>
 
-            button{{
-                width:100%;
-                padding:18px;
-                border:none;
-                border-radius:18px;
-                background:#7c9b76;
-                color:white;
-                font-size:18px;
-                margin-top:12px;
-            }}
+    </div>
+    """
 
-            input{{
-                width:100%;
-                padding:18px;
-                border:none;
-                border-radius:18px;
-                margin-top:12px;
-                box-sizing:border-box;
-            }}
+return f"""
 
-            .item{{
-                background:#f2f2f2;
-                padding:12px;
-                border-radius:12px;
-                margin-top:10px;
-            }}
+<!DOCTYPE html>
 
-        </style>
+<html lang="ru">
 
-    </head>
+<head>
 
-    <body>
+    <meta charset="UTF-8">
 
-        <div class="card">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
 
-            <h1>
-                Sage Finance
-            </h1>
+    <title>
+        Sage Finance
+    </title>
 
-            <div class="balance">
+    <style>
 
-                {balance} ₽
+        body{{
+            margin:0;
+            padding:20px;
+            background:#d9e5d6;
+            font-family:sans-serif;
+        }}
 
-            </div>
+        .card{{
+            background:white;
+            border-radius:24px;
+            padding:25px;
+            max-width:480px;
+            margin:auto;
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }}
 
-            <input
-                type="number"
-                id="amount"
-                placeholder="Сумма"
-            >
+        h1{{
+            text-align:center;
+            margin-top:0;
+        }}
 
-            <button onclick="addIncome()">
-                ➕ Доход
-            </button>
+        .balance{{
+            font-size:42px;
+            font-weight:bold;
+            text-align:center;
+            margin:25px 0;
+        }}
 
-            <button onclick="addExpense()">
-                ➖ Расход
-            </button>
+        .stats{{
+            display:flex;
+            gap:10px;
+            margin-bottom:20px;
+        }}
 
-            <h2>
-                История
-            </h2>
+        .stat{{
+            flex:1;
+            padding:14px;
+            border-radius:16px;
+            color:white;
+            text-align:center;
+            font-weight:bold;
+        }}
 
-            {history_html}
+        .income{{
+            background:#2e7d32;
+        }}
+
+        .expense{{
+            background:#c62828;
+        }}
+
+        input, select{{
+            width:100%;
+            padding:18px;
+            border:none;
+            border-radius:18px;
+            margin-top:12px;
+            box-sizing:border-box;
+            font-size:18px;
+        }}
+
+        button{{
+            width:100%;
+            padding:18px;
+            border:none;
+            border-radius:18px;
+            margin-top:12px;
+            background:#7c9b76;
+            color:white;
+            font-size:18px;
+        }}
+
+        .item{{
+            background:#f2f2f2;
+            padding:14px;
+            border-radius:14px;
+            margin-top:10px;
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+        }}
+
+    </style>
+
+</head>
+
+<body>
+
+    <div class="card">
+
+        <h1>
+            Sage Finance
+        </h1>
+
+        <div class="balance">
+
+            {balance} ₽
 
         </div>
 
-        <script>
+        <div class="stats">
 
-            async function addIncome(){{
+            <div class="stat income">
 
-                const amount =
-                    document.getElementById(
-                        "amount"
-                    ).value
+                Доход<br>
+                {income_total} ₽
 
-                if(!amount) return
+            </div>
 
-                await fetch(
-                    "/income/" + amount
-                )
+            <div class="stat expense">
 
-                location.reload()
-            }}
+                Расход<br>
+                {expense_total} ₽
 
-            async function addExpense(){{
+            </div>
 
-                const amount =
-                    document.getElementById(
-                        "amount"
-                    ).value
+        </div>
 
-                if(!amount) return
+        <input
+            type="number"
+            id="amount"
+            placeholder="Сумма"
+        >
 
-                await fetch(
-                    "/expense/" + amount
-                )
+        <select id="category">
 
-                location.reload()
-            }}
+            <option>
+                🍔 Еда
+            </option>
 
-        </script>
+            <option>
+                🚕 Транспорт
+            </option>
 
-    </body>
+            <option>
+                🛍 Покупки
+            </option>
 
-    </html>
-    """
+            <option>
+                🎮 Развлечения
+            </option>
 
+            <option>
+                💼 Зарплата
+            </option>
 
+            <option>
+                📦 Другое
+            </option>
 
-@app.route("/income/<amount>")
-def income(amount):
+        </select>
 
-    global data
+        <button onclick="addIncome()">
 
-    amount = int(amount)
+            ➕ Добавить доход
 
-    data["balance"] += amount
+        </button>
 
-    data["transactions"].append(
-        f"➕ Доход: {amount} ₽"
-    )
+        <button onclick="addExpense()">
 
-    save_data(data)
+            ➖ Добавить расход
 
-    return "ok"
+        </button>
 
+        <h2>
+            История
+        </h2>
 
-@app.route("/expense/<amount>")
-def expense(amount):
+        {history_html}
 
-    global data
+    </div>
 
-    amount = int(amount)
+    <script>
 
-    data["balance"] -= amount
+        async function addIncome(){{
 
-    data["transactions"].append(
-        f"➖ Расход: {amount} ₽"
-    )
+            const amount =
+                document.getElementById(
+                    "amount"
+                ).value
 
-    save_data(data)
+            const category =
+                document.getElementById(
+                    "category"
+                ).value
 
-    return "ok"
+            if(!amount) return
 
+            await fetch(
+                `/income/${{amount}}/${{category}}`
+            )
 
-@bot.message_handler(commands=["start"])
-def start(message):
+            location.reload()
+        }}
 
-    markup = types.ReplyKeyboardMarkup(
-        resize_keyboard=True
-    )
+        async function addExpense(){{
 
-    web_app = types.WebAppInfo(
-        "https://sage-finance.onrender.com/"
-    )
+            const amount =
+                document.getElementById(
+                    "amount"
+                ).value
 
-    button = types.KeyboardButton(
-        text="📱 Открыть Sage Finance",
-        web_app=web_app
-    )
+            const category =
+                document.getElementById(
+                    "category"
+                ).value
 
-    markup.add(button)
+            if(!amount) return
 
-    bot.send_message(
-        message.chat.id,
-        "🚀 Sage Finance готов",
-        reply_markup=markup
-    )
+            await fetch(
+                `/expense/${{amount}}/${{category}}`
+            )
 
+            location.reload()
+        }}
+
+    </script>
+
+</body>
+
+</html>
+"""
+
+@app.route("/income//")def income(amount, category):
+
+global data
+
+amount = int(amount)
+
+data["balance"] += amount
+
+data["transactions"].append({
+    "type": "income",
+    "amount": amount,
+    "category": category
+})
+
+save_data(data)
+
+return "ok"
+
+@app.route("/expense//")def expense(amount, category):
+
+global data
+
+amount = int(amount)
+
+data["balance"] -= amount
+
+data["transactions"].append({
+    "type": "expense",
+    "amount": amount,
+    "category": category
+})
+
+save_data(data)
+
+return "ok"
+
+@bot.message_handler(commands=["start"])def start(message):
+
+markup = types.ReplyKeyboardMarkup(
+    resize_keyboard=True
+)
+
+web_app = types.WebAppInfo(
+    "https://sage-finance.onrender.com/"
+)
+
+button = types.KeyboardButton(
+    text="📱 Открыть Sage Finance",
+    web_app=web_app
+)
+
+markup.add(button)
+
+bot.send_message(
+    message.chat.id,
+    "🚀 Sage Finance готов",
+    reply_markup=markup
+)
 
 def run_bot():
 
-    while True:
+while True:
 
-        try:
+    try:
 
-            bot.remove_webhook()
+        bot.remove_webhook()
 
-            time.sleep(2)
+        time.sleep(2)
 
-            bot.infinity_polling(
-                timeout=30,
-                long_polling_timeout=30,
-                skip_pending=True
-            )
+        bot.infinity_polling(
+            timeout=30,
+            long_polling_timeout=30,
+            skip_pending=True
+        )
 
-        except Exception as e:
+    except Exception as e:
 
-            print(e)
+        print(e)
 
-            time.sleep(5)
+        time.sleep(5)
 
+if name == "main":
 
-if __name__ == "__main__":
+threading.Thread(
+    target=run_bot,
+    daemon=True
+).start()
 
-    threading.Thread(
-        target=run_bot,
-        daemon=True
-    ).start()
-
-    app.run(
-        host="0.0.0.0",
-        port=int(
-            os.environ.get(
-                "PORT",
-                10000
-            )
+app.run(
+    host="0.0.0.0",
+    port=int(
+        os.environ.get(
+            "PORT",
+            10000
         )
     )
+)
