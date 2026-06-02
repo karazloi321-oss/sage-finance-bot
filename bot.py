@@ -1,4 +1,4 @@
-from flask import Flask, reques
+from flask import Flask, request
 import telebot
 from telebot import types
 import os
