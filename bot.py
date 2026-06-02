@@ -34,6 +34,7 @@ def init_db():
         user_id INTEGER,
         type TEXT,
         category TEXT,
+        account TEXT,
         amount INTEGER
     )
     """)
@@ -99,7 +100,13 @@ def update_balance(user_id, amount):
     conn.close()
 
 
-def add_transaction(user_id, ttype, category, amount):
+def add_transaction(
+    user_id,
+    ttype,
+    category,
+    account,
+    amount
+):
 
     conn = sqlite3.connect(DB_FILE)
 
@@ -110,13 +117,15 @@ def add_transaction(user_id, ttype, category, amount):
         user_id,
         type,
         category,
+        account,
         amount
     )
-    VALUES(?,?,?,?)
+    VALUES(?,?,?,?,?)
     """, (
         user_id,
         ttype,
         category,
+        account,
         amount
     ))
 
@@ -132,11 +141,15 @@ def get_transactions(user_id):
     cursor = conn.cursor()
 
     cursor.execute("""
-    SELECT type, category, amount
+    SELECT
+        type,
+        category,
+        account,
+        amount
     FROM transactions
     WHERE user_id=?
     ORDER BY id DESC
-    LIMIT 15
+    LIMIT 20
     """, (user_id,))
 
     rows = cursor.fetchall()
@@ -162,14 +175,14 @@ def home():
 
     transactions = get_transactions(user_id)
 
-    history_html = ""
-
     income_total = 0
     expense_total = 0
 
-    categories = {}
+    history_html = ""
 
-    for ttype, category, amount in transactions:
+    analytics = {}
+
+    for ttype, category, account, amount in transactions:
 
         if ttype == "income":
 
@@ -185,27 +198,36 @@ def home():
 
             expense_total += amount
 
-            if category not in categories:
+            if category not in analytics:
 
-                categories[category] = 0
+                analytics[category] = 0
 
-            categories[category] += amount
+            analytics[category] += amount
 
         history_html += f"""
 
-        <div class="item">
+        <div class="transaction">
 
             <div>
 
-                {emoji}
-                {category}
+                <div class="transaction-title">
+
+                    {emoji} {category}
+
+                </div>
+
+                <div class="transaction-account">
+
+                    {account}
+
+                </div>
 
             </div>
 
-            <div style="
-                color:{color};
-                font-weight:bold;
-            ">
+            <div
+                class="transaction-amount"
+                style="color:{color};"
+            >
 
                 {amount} ₽
 
@@ -216,28 +238,29 @@ def home():
 
     analytics_html = ""
 
-    for category, amount in categories.items():
+    for category, amount in analytics.items():
 
-        width = min(amount / 10, 100)
+        width = min(amount / 15, 100)
 
         analytics_html += f"""
 
         <div class="analytics-item">
 
-            <div class="analytics-name">
-                {category}
+            <div class="analytics-top">
+
+                <span>{category}</span>
+
+                <span>{amount} ₽</span>
+
             </div>
 
             <div class="bar-bg">
 
-                <div class="bar"
-                    style="width:{width}%">
-                </div>
+                <div
+                    class="bar"
+                    style="width:{width}%"
+                ></div>
 
-            </div>
-
-            <div>
-                {amount} ₽
             </div>
 
         </div>
@@ -264,99 +287,152 @@ def home():
 
         <style>
 
+            *{{
+                box-sizing:border-box;
+            }}
+
             body{{
                 margin:0;
-                padding:20px;
-                background:#121212;
+                background:#0f1115;
                 color:white;
                 font-family:sans-serif;
             }}
 
-            .card{{
-                background:#1e1e1e;
-                border-radius:24px;
-                padding:25px;
-                max-width:500px;
+            .container{{
+                max-width:520px;
                 margin:auto;
+                padding:20px;
             }}
 
-            h1,h2{{
-                text-align:center;
+            .header{{
+                font-size:32px;
+                font-weight:bold;
+                margin-bottom:20px;
+            }}
+
+            .balance-card{{
+                background:linear-gradient(
+                    135deg,
+                    #1f8bff,
+                    #6c63ff
+                );
+                border-radius:28px;
+                padding:28px;
+                margin-bottom:20px;
+            }}
+
+            .balance-label{{
+                opacity:0.8;
+                font-size:16px;
             }}
 
             .balance{{
-                font-size:48px;
+                font-size:44px;
                 font-weight:bold;
-                text-align:center;
-                margin:30px 0;
+                margin-top:10px;
             }}
 
             .stats{{
                 display:flex;
-                gap:10px;
-                margin-bottom:20px;
+                gap:12px;
+                margin-top:20px;
             }}
 
             .stat{{
                 flex:1;
-                padding:15px;
+                padding:14px;
                 border-radius:18px;
                 text-align:center;
-                font-weight:bold;
             }}
 
             .income{{
-                background:#1b5e20;
+                background:#143d1f;
             }}
 
             .expense{{
-                background:#b71c1c;
+                background:#4a1717;
+            }}
+
+            .card{{
+                background:#1a1d24;
+                border-radius:24px;
+                padding:20px;
+                margin-top:20px;
+            }}
+
+            h2{{
+                margin-top:0;
             }}
 
             input, select{{
                 width:100%;
-                padding:18px;
+                padding:16px;
+                margin-top:12px;
                 border:none;
-                border-radius:18px;
-                margin-top:10px;
-                background:#2a2a2a;
+                border-radius:16px;
+                background:#2a2f3a;
                 color:white;
-                box-sizing:border-box;
-                font-size:18px;
+                font-size:16px;
             }}
 
             button{{
                 width:100%;
-                padding:18px;
+                padding:16px;
                 border:none;
-                border-radius:18px;
-                background:#4caf50;
+                border-radius:16px;
+                margin-top:12px;
+                font-size:17px;
+                font-weight:bold;
                 color:white;
-                font-size:18px;
-                margin-top:10px;
             }}
 
-            .item{{
-                background:#2a2a2a;
-                padding:14px;
-                border-radius:14px;
-                margin-top:10px;
+            .income-btn{{
+                background:#4caf50;
+            }}
+
+            .expense-btn{{
+                background:#ff5252;
+            }}
+
+            .transaction{{
+                background:#232833;
+                border-radius:18px;
+                padding:16px;
+                margin-top:12px;
                 display:flex;
                 justify-content:space-between;
+                align-items:center;
+            }}
+
+            .transaction-title{{
+                font-weight:bold;
+            }}
+
+            .transaction-account{{
+                opacity:0.7;
+                margin-top:4px;
+                font-size:14px;
+            }}
+
+            .transaction-amount{{
+                font-weight:bold;
+                font-size:18px;
             }}
 
             .analytics-item{{
-                margin-top:15px;
+                margin-top:16px;
             }}
 
-            .analytics-name{{
-                margin-bottom:5px;
+            .analytics-top{{
+                display:flex;
+                justify-content:space-between;
+                margin-bottom:8px;
             }}
 
             .bar-bg{{
                 width:100%;
                 height:14px;
-                background:#2a2a2a;
+                background:#2a2f3a;
                 border-radius:20px;
                 overflow:hidden;
             }}
@@ -372,133 +448,207 @@ def home():
 
     <body>
 
-        <div class="card">
+        <div class="container">
 
-            <h1>
+            <div class="header">
+
                 Sage Finance
-            </h1>
-
-            <div class="balance">
-
-                {balance} ₽
 
             </div>
 
-            <div class="stats">
+            <div class="balance-card">
 
-                <div class="stat income">
+                <div class="balance-label">
 
-                    Доход<br>
-                    {income_total} ₽
+                    Общий баланс
 
                 </div>
 
-                <div class="stat expense">
+                <div class="balance">
 
-                    Расход<br>
-                    {expense_total} ₽
+                    {balance} ₽
+
+                </div>
+
+                <div class="stats">
+
+                    <div class="stat income">
+
+                        Доход<br>
+                        {income_total} ₽
+
+                    </div>
+
+                    <div class="stat expense">
+
+                        Расход<br>
+                        {expense_total} ₽
+
+                    </div>
 
                 </div>
 
             </div>
 
-            <form action="/income">
+            <div class="card">
 
-                <input
-                    type="hidden"
-                    name="user_id"
-                    value="{user_id}"
-                >
+                <h2>
+                    Добавить доход
+                </h2>
 
-                <input
-                    type="number"
-                    name="amount"
-                    placeholder="Сумма дохода"
-                    required
-                >
+                <form action="/income">
 
-                <select name="category">
+                    <input
+                        type="hidden"
+                        name="user_id"
+                        value="{user_id}"
+                    >
 
-                    <option>
-                        💼 Зарплата
-                    </option>
+                    <input
+                        type="number"
+                        name="amount"
+                        placeholder="Сумма"
+                        required
+                    >
 
-                    <option>
-                        💰 Подработка
-                    </option>
+                    <select name="category">
 
-                    <option>
-                        📦 Другое
-                    </option>
+                        <option>
+                            💼 Зарплата
+                        </option>
 
-                </select>
+                        <option>
+                            💰 Подработка
+                        </option>
 
-                <button type="submit">
+                        <option>
+                            📦 Другое
+                        </option>
 
-                    ➕ Добавить доход
+                    </select>
 
-                </button>
+                    <select name="account">
 
-            </form>
+                        <option>
+                            💳 Карта
+                        </option>
 
-            <form action="/expense">
+                        <option>
+                            💵 Наличные
+                        </option>
 
-                <input
-                    type="hidden"
-                    name="user_id"
-                    value="{user_id}"
-                >
+                        <option>
+                            🏢 Бизнес
+                        </option>
 
-                <input
-                    type="number"
-                    name="amount"
-                    placeholder="Сумма расхода"
-                    required
-                >
+                    </select>
 
-                <select name="category">
+                    <button
+                        class="income-btn"
+                        type="submit"
+                    >
 
-                    <option>
-                        🍔 Еда
-                    </option>
+                        ➕ Добавить доход
 
-                    <option>
-                        🚕 Транспорт
-                    </option>
+                    </button>
 
-                    <option>
-                        🛍 Покупки
-                    </option>
+                </form>
 
-                    <option>
-                        🎮 Развлечения
-                    </option>
+            </div>
 
-                    <option>
-                        📦 Другое
-                    </option>
+            <div class="card">
 
-                </select>
+                <h2>
+                    Добавить расход
+                </h2>
 
-                <button type="submit">
+                <form action="/expense">
 
-                    ➖ Добавить расход
+                    <input
+                        type="hidden"
+                        name="user_id"
+                        value="{user_id}"
+                    >
 
-                </button>
+                    <input
+                        type="number"
+                        name="amount"
+                        placeholder="Сумма"
+                        required
+                    >
 
-            </form>
+                    <select name="category">
 
-            <h2>
-                Аналитика
-            </h2>
+                        <option>
+                            🍔 Еда
+                        </option>
 
-            {analytics_html}
+                        <option>
+                            🚕 Транспорт
+                        </option>
 
-            <h2>
-                История
-            </h2>
+                        <option>
+                            🛍 Покупки
+                        </option>
 
-            {history_html}
+                        <option>
+                            🎮 Развлечения
+                        </option>
+
+                        <option>
+                            📦 Другое
+                        </option>
+
+                    </select>
+
+                    <select name="account">
+
+                        <option>
+                            💳 Карта
+                        </option>
+
+                        <option>
+                            💵 Наличные
+                        </option>
+
+                        <option>
+                            🏢 Бизнес
+                        </option>
+
+                    </select>
+
+                    <button
+                        class="expense-btn"
+                        type="submit"
+                    >
+
+                        ➖ Добавить расход
+
+                    </button>
+
+                </form>
+
+            </div>
+
+            <div class="card">
+
+                <h2>
+                    Аналитика
+                </h2>
+
+                {analytics_html}
+
+            </div>
+
+            <div class="card">
+
+                <h2>
+                    История операций
+                </h2>
+
+                {history_html}
+
+            </div>
 
         </div>
 
@@ -528,12 +678,18 @@ def income():
         "Доход"
     )
 
+    account = request.args.get(
+        "account",
+        "Карта"
+    )
+
     update_balance(user_id, amount)
 
     add_transaction(
         user_id,
         "income",
         category,
+        account,
         amount
     )
 
@@ -563,12 +719,18 @@ def expense():
         "Расход"
     )
 
+    account = request.args.get(
+        "account",
+        "Карта"
+    )
+
     update_balance(user_id, -amount)
 
     add_transaction(
         user_id,
         "expense",
         category,
+        account,
         amount
     )
 
