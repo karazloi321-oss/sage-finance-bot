@@ -8,24 +8,47 @@ import json
 
 TOKEN = os.getenv("TOKEN")
 
-app = Flask(name)
+app = Flask(__name__)
 
 bot = telebot.TeleBot(TOKEN)
 
 DATA_FILE = "finance.json"
 
+
 def load_data():
 
-if not os.path.exists(DATA_FILE):
+    if not os.path.exists(DATA_FILE):
 
-    default_data = {
-        "balance": 0,
-        "transactions": []
-    }
+        default_data = {
+            "balance": 0,
+            "transactions": []
+        }
+
+        with open(DATA_FILE, "w") as f:
+
+            json.dump(default_data, f)
+
+        return default_data
+
+    try:
+
+        with open(DATA_FILE, "r") as f:
+
+            return json.load(f)
+
+    except:
+
+        return {
+            "balance": 0,
+            "transactions": []
+        }
+
+
+def save_data(data):
 
     with open(DATA_FILE, "w") as f:
 
-        json.dump(default_data, f)
+        json.dump(data, f)
 
     return default_data
 
