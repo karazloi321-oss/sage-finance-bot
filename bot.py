@@ -25,6 +25,7 @@ def load_data():
         }
 
         with open(DATA_FILE, "w") as f:
+
             json.dump(default_data, f)
 
         return default_data
@@ -32,6 +33,7 @@ def load_data():
     try:
 
         with open(DATA_FILE, "r") as f:
+
             return json.load(f)
 
     except:
@@ -45,6 +47,7 @@ def load_data():
 def save_data(data):
 
     with open(DATA_FILE, "w") as f:
+
         json.dump(data, f)
 
 
@@ -55,53 +58,56 @@ data = load_data()
 def home():
 
     if request.method == "HEAD":
+
         return "", 200
 
     balance = data.get("balance", 0)
+
     history_html = ""
 
-for item in reversed(
-    data.get(
-        "transactions",
-        []
-    )[-10:]
-):
+    for item in reversed(
+        data.get(
+            "transactions",
+            []
+        )[-10:]
+    ):
 
-    history_html += f"""
+        history_html += f"""
 
-    <div style="
-        background:#f2f2f2;
-        padding:12px;
-        border-radius:12px;
-        margin-top:10px;
-    ">
-        {item}
-        <h2>
-    История
-</h2>
+        <div class="item">
 
-{history_html}
-    </div>
+            {item}
 
-    """
+        </div>
 
-    return 
+        """
 
-    <html>
+    return f"""
+
+    <!DOCTYPE html>
+
+    <html lang="ru">
 
     <head>
+
+        <meta charset="UTF-8">
 
         <meta
             name="viewport"
             content="width=device-width, initial-scale=1"
         >
 
+        <title>
+            Sage Finance
+        </title>
+
         <style>
 
             body{{
+                margin:0;
+                padding:20px;
                 background:#d9e5d6;
                 font-family:sans-serif;
-                padding:20px;
             }}
 
             .card{{
@@ -112,11 +118,28 @@ for item in reversed(
                 margin:auto;
             }}
 
+            h1{{
+                text-align:center;
+            }}
+
             .balance{{
                 font-size:42px;
                 font-weight:bold;
                 text-align:center;
-                margin:20px 0;
+                margin:25px 0;
+            }}
+
+            form{{
+                margin-top:15px;
+            }}
+
+            input{{
+                width:100%;
+                padding:18px;
+                border:none;
+                border-radius:18px;
+                box-sizing:border-box;
+                font-size:18px;
             }}
 
             button{{
@@ -127,43 +150,75 @@ for item in reversed(
                 background:#7c9b76;
                 color:white;
                 font-size:18px;
-                margin-top:12px;
+                margin-top:10px;
+            }}
+
+            .item{{
+                background:#f2f2f2;
+                padding:12px;
+                border-radius:12px;
+                margin-top:10px;
             }}
 
         </style>
 
     </head>
-  </body>
-<form action="/income" method="get">
 
-    <input
-        type="number"
-        name="amount"
-        placeholder="Сумма дохода"
-        required
-    >
+    <body>
 
-    <button type="submit">
-        ➕ Добавить доход
-    </button>
+        <div class="card">
 
-</form>
+            <h1>
+                Sage Finance
+            </h1>
 
-<form action="/expense" method="get">
+            <div class="balance">
 
-    <input
-        type="number"
-        name="amount"
-        placeholder="Сумма расхода"
-        required
-    >
+                {balance} ₽
 
-    <button type="submit">
-        ➖ Добавить расход
-    </button>
+            </div>
 
-</form>
-</a>
+            <form action="/income">
+
+                <input
+                    type="number"
+                    name="amount"
+                    placeholder="Сумма дохода"
+                    required
+                >
+
+                <button type="submit">
+
+                    ➕ Добавить доход
+
+                </button>
+
+            </form>
+
+            <form action="/expense">
+
+                <input
+                    type="number"
+                    name="amount"
+                    placeholder="Сумма расхода"
+                    required
+                >
+
+                <button type="submit">
+
+                    ➖ Добавить расход
+
+                </button>
+
+            </form>
+
+            <h2>
+                История
+            </h2>
+
+            {history_html}
+
+        </div>
 
     </body>
 
@@ -185,19 +240,15 @@ def income():
 
     data["balance"] += amount
 
-    if "transactions" not in data:
-
-        data["transactions"] = []
-
     data["transactions"].append(
         f"➕ Доход: {amount} ₽"
     )
 
     save_data(data)
 
-    return '''
+    return """
     <meta http-equiv="refresh" content="0; url=/">
-    '''
+    """
 
 
 @app.route("/expense")
@@ -214,31 +265,15 @@ def expense():
 
     data["balance"] -= amount
 
-    if "transactions" not in data:
-
-        data["transactions"] = []
-
     data["transactions"].append(
         f"➖ Расход: {amount} ₽"
     )
 
     save_data(data)
 
-    return '''
+    return """
     <meta http-equiv="refresh" content="0; url=/">
-    '''
-
-
-@app.route("/expense")
-def expense():
-
-    global data
-
-    data["balance"] -= 100
-
-    save_data(data)
-
-    return "ok"
+    """
 
 
 @bot.message_handler(commands=["start"])
@@ -301,6 +336,7 @@ if __name__ == "__main__":
         port=int(
             os.environ.get(
                 "PORT",
+                10000
             )
         )
     )
