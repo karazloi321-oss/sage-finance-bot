@@ -1,4 +1,10 @@
-from flask import Flask, requestimport telebotfrom telebot import typesimport osimport threadingimport timeimport json
+from flask import Flask, request
+import telebot
+from telebot import types
+import os
+import threading
+import time
+import json
 
 TOKEN = os.getenv("TOKEN")
 
