@@ -85,7 +85,7 @@ for item in reversed(
 
     """
 
-    return f"""
+    return 
 
     <html>
 
