@@ -287,165 +287,213 @@ def home():
 
         <style>
 
-            *{
-    box-sizing:border-box;
-}
+            *{{
+                box-sizing:border-box;
+            }}
 
-body{
-    margin:0;
-    background:#0f1115;
-    color:white;
-    font-family:sans-serif;
-}
+            html{{
+                scroll-behavior:smooth;
+            }}
 
-.container{
-    max-width:520px;
-    margin:auto;
-    padding:14px;
-}
+            body{{
+                margin:0;
+                background:#0f1115;
+                color:white;
+                font-family:sans-serif;
+                padding-bottom:110px;
+            }}
 
-.header{
-    font-size:24px;
-    font-weight:bold;
-    margin-bottom:14px;
-}
+            .container{{
+                max-width:520px;
+                margin:auto;
+                padding:14px;
+            }}
 
-.balance-card{
-    background:linear-gradient(
-        135deg,
-        #1f8bff,
-        #6c63ff
-    );
-    border-radius:22px;
-    padding:20px;
-    margin-bottom:14px;
-}
+            .header{{
+                font-size:24px;
+                font-weight:bold;
+                margin-bottom:14px;
+            }}
 
-.balance-label{
-    opacity:0.8;
-    font-size:13px;
-}
+            .balance-card{{
+                background:linear-gradient(
+                    135deg,
+                    #1f8bff,
+                    #6c63ff
+                );
+                border-radius:22px;
+                padding:20px;
+                margin-bottom:14px;
+            }}
 
-.balance{
-    font-size:34px;
-    font-weight:bold;
-    margin-top:6px;
-}
+            .balance-label{{
+                opacity:0.8;
+                font-size:13px;
+            }}
 
-.stats{
-    display:flex;
-    gap:8px;
-    margin-top:14px;
-}
+            .balance{{
+                font-size:34px;
+                font-weight:bold;
+                margin-top:6px;
+            }}
 
-.stat{
-    flex:1;
-    padding:10px;
-    border-radius:14px;
-    text-align:center;
-    font-size:13px;
-}
+            .stats{{
+                display:flex;
+                gap:8px;
+                margin-top:14px;
+            }}
 
-.income{
-    background:#143d1f;
-}
+            .stat{{
+                flex:1;
+                padding:10px;
+                border-radius:14px;
+                text-align:center;
+                font-size:13px;
+            }}
 
-.expense{
-    background:#4a1717;
-}
+            .income{{
+                background:#143d1f;
+            }}
 
-.card{
-    background:#1a1d24;
-    border-radius:18px;
-    padding:14px;
-    margin-top:14px;
-}
+            .expense{{
+                background:#4a1717;
+            }}
 
-h2{
-    margin-top:0;
-    font-size:18px;
-}
+            .card{{
+                background:#1a1d24;
+                border-radius:18px;
+                padding:14px;
+                margin-top:14px;
+            }}
 
-input, select{
-    width:100%;
-    padding:12px;
-    margin-top:8px;
-    border:none;
-    border-radius:12px;
-    background:#2a2f3a;
-    color:white;
-    box-sizing:border-box;
-    font-size:14px;
-}
+            h2{{
+                margin-top:0;
+                font-size:18px;
+            }}
 
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:12px;
-    margin-top:8px;
-    font-size:14px;
-    font-weight:bold;
-    color:white;
-}
+            input, select{{
+                width:100%;
+                padding:12px;
+                margin-top:8px;
+                border:none;
+                border-radius:12px;
+                background:#2a2f3a;
+                color:white;
+                box-sizing:border-box;
+                font-size:14px;
+            }}
 
-.income-btn{
-    background:#4caf50;
-}
+            button{{
+                width:100%;
+                padding:12px;
+                border:none;
+                border-radius:12px;
+                margin-top:8px;
+                font-size:14px;
+                font-weight:bold;
+                color:white;
+            }}
 
-.expense-btn{
-    background:#ff5252;
-}
+            .income-btn{{
+                background:#4caf50;
+            }}
 
-.transaction{
-    background:#232833;
-    border-radius:14px;
-    padding:12px;
-    margin-top:8px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
+            .expense-btn{{
+                background:#ff5252;
+            }}
 
-.transaction-title{
-    font-weight:bold;
-    font-size:14px;
-}
+            .transaction{{
+                background:#232833;
+                border-radius:14px;
+                padding:12px;
+                margin-top:8px;
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+            }}
 
-.transaction-account{
-    opacity:0.7;
-    margin-top:2px;
-    font-size:11px;
-}
+            .transaction-title{{
+                font-weight:bold;
+                font-size:14px;
+            }}
 
-.transaction-amount{
-    font-weight:bold;
-    font-size:15px;
-}
+            .transaction-account{{
+                opacity:0.7;
+                margin-top:2px;
+                font-size:11px;
+            }}
 
-.analytics-item{
-    margin-top:12px;
-}
+            .transaction-amount{{
+                font-weight:bold;
+                font-size:15px;
+            }}
 
-.analytics-top{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:5px;
-    font-size:13px;
-}
+            .analytics-item{{
+                margin-top:12px;
+            }}
 
-.bar-bg{
-    width:100%;
-    height:10px;
-    background:#2a2f3a;
-    border-radius:20px;
-    overflow:hidden;
-}
+            .analytics-top{{
+                display:flex;
+                justify-content:space-between;
+                margin-bottom:5px;
+                font-size:13px;
+            }}
 
-.bar{
-    height:100%;
-    background:#4caf50;
-}
+            .bar-bg{{
+                width:100%;
+                height:10px;
+                background:#2a2f3a;
+                border-radius:20px;
+                overflow:hidden;
+            }}
+
+            .bar{{
+                height:100%;
+                background:#4caf50;
+            }}
+
+            .bottom-nav{{
+                position:fixed;
+                bottom:0;
+                left:0;
+                width:100%;
+                background:#171a20;
+                display:flex;
+                justify-content:space-around;
+                padding:10px 0;
+                border-top:1px solid #2a2f3a;
+                z-index:999;
+            }}
+
+            .bottom-nav a{{
+                color:white;
+                text-decoration:none;
+                display:flex;
+                flex-direction:column;
+                align-items:center;
+                font-size:11px;
+                opacity:0.8;
+            }}
+
+            .bottom-nav a span{{
+                margin-top:4px;
+            }}
+
+            .floating-btn{{
+                position:fixed;
+                right:18px;
+                bottom:78px;
+                width:56px;
+                height:56px;
+                border-radius:50%;
+                background:#4caf50;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-size:34px;
+                font-weight:bold;
+                box-shadow:0 6px 20px rgba(0,0,0,0.4);
+            }}
 
         </style>
 
@@ -455,7 +503,7 @@ button{
 
         <div class="container">
 
-            <div class="header">
+            <div class="header" id="top">
 
                 Sage Finance
 
@@ -635,7 +683,7 @@ button{
 
             </div>
 
-            <div class="card">
+            <div class="card" id="analytics">
 
                 <h2>
                     Аналитика
@@ -645,7 +693,7 @@ button{
 
             </div>
 
-            <div class="card">
+            <div class="card" id="history">
 
                 <h2>
                     История операций
@@ -654,6 +702,29 @@ button{
                 {history_html}
 
             </div>
+
+        </div>
+
+        <div class="floating-btn">
+            +
+        </div>
+
+        <div class="bottom-nav">
+
+            <a href="#top">
+                🏠
+                <span>Главная</span>
+            </a>
+
+            <a href="#analytics">
+                📊
+                <span>Аналитика</span>
+            </a>
+
+            <a href="#history">
+                🧾
+                <span>История</span>
+            </a>
 
         </div>
 
