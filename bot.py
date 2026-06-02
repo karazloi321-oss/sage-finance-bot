@@ -130,25 +130,17 @@ def home():
 
         </div>
 
-        <script>
+        <a href="/income">
+    <button>
+        ➕ Доход +100
+    </button>
+</a>
 
-function addIncome(){
-
-    fetch("/income")
-    .then(() => {
-        location.reload()
-    })
-}
-
-function addExpense(){
-
-    fetch("/expense")
-    .then(() => {
-        location.reload()
-    })
-}
-
-</script>
+<a href="/expense">
+    <button>
+        ➖ Расход -100
+    </button>
+</a>
 
     </body>
 
