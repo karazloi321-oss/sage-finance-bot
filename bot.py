@@ -232,7 +232,6 @@ if __name__ == "__main__":
         port=int(
             os.environ.get(
                 "PORT",
-       О         10000
             )
         )
     )
