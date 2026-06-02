@@ -1,10 +1,10 @@
 from flask import Flask, request
 import telebot
 from telebot import types
-import os
+import sqlite3
 import threading
 import time
-import sqlite3
+import os
 
 TOKEN = os.getenv("TOKEN")
 
@@ -163,13 +163,9 @@ def get_transactions(user_id):
 def home():
 
     if request.method == "HEAD":
-
         return "", 200
 
-    user_id = request.args.get(
-        "user_id",
-        "1"
-    )
+    user_id = request.args.get("user_id", "1")
 
     balance = get_balance(user_id)
 
@@ -178,48 +174,44 @@ def home():
     income_total = 0
     expense_total = 0
 
-    history_html = ""
-
     analytics = {}
+
+    history_html = ""
 
     for ttype, category, account, amount in transactions:
 
         if ttype == "income":
 
-            emoji = "➕"
+            income_total += amount
+
             color = "#4caf50"
 
-            income_total += amount
+            emoji = "➕"
 
         else:
 
-            emoji = "➖"
-            color = "#ff5252"
-
             expense_total += amount
 
-            if category not in analytics:
+            color = "#ff5252"
 
+            emoji = "➖"
+
+            if category not in analytics:
                 analytics[category] = 0
 
             analytics[category] += amount
 
         history_html += f"""
-
         <div class="transaction">
 
             <div>
 
                 <div class="transaction-title">
-
                     {emoji} {category}
-
                 </div>
 
                 <div class="transaction-account">
-
                     {account}
-
                 </div>
 
             </div>
@@ -228,9 +220,7 @@ def home():
                 class="transaction-amount"
                 style="color:{color};"
             >
-
                 {amount} ₽
-
             </div>
 
         </div>
@@ -268,486 +258,423 @@ def home():
 
     return f"""
 
-    <!DOCTYPE html>
+<!DOCTYPE html>
 
-    <html lang="ru">
+<html lang="ru">
 
-    <head>
+<head>
 
-        <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1"
-        >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+>
 
-        <title>
-            Sage Finance
-        </title>
+<title>Sage Finance</title>
 
-        <style>
+<style>
 
-            *{{
-                box-sizing:border-box;
-            }}
+*{{
+    box-sizing:border-box;
+}}
 
-            html{{
-                scroll-behavior:smooth;
-            }}
+html{{
+    scroll-behavior:smooth;
+}}
 
-            body{{
-                margin:0;
-                background:#0f1115;
-                color:white;
-                font-family:sans-serif;
-                padding-bottom:110px;
-            }}
+body{{
+    margin:0;
+    background:#0f1115;
+    color:white;
+    font-family:sans-serif;
+    padding-bottom:110px;
+}}
 
-            .container{{
-                max-width:520px;
-                margin:auto;
-                padding:14px;
-            }}
+.container{{
+    max-width:520px;
+    margin:auto;
+    padding:14px;
+}}
 
-            .header{{
-                font-size:24px;
-                font-weight:bold;
-                margin-bottom:14px;
-            }}
+.header{{
+    font-size:24px;
+    font-weight:bold;
+    margin-bottom:14px;
+}}
 
-            .balance-card{{
-                background:linear-gradient(
-                    135deg,
-                    #1f8bff,
-                    #6c63ff
-                );
-                border-radius:22px;
-                padding:20px;
-                margin-bottom:14px;
-            }}
+.balance-card{{
+    background:linear-gradient(
+        135deg,
+        #1f8bff,
+        #6c63ff
+    );
+    border-radius:22px;
+    padding:20px;
+    margin-bottom:14px;
+}}
 
-            .balance-label{{
-                opacity:0.8;
-                font-size:13px;
-            }}
+.balance-label{{
+    opacity:0.8;
+    font-size:13px;
+}}
 
-            .balance{{
-                font-size:34px;
-                font-weight:bold;
-                margin-top:6px;
-            }}
+.balance{{
+    font-size:34px;
+    font-weight:bold;
+    margin-top:6px;
+}}
 
-            .stats{{
-                display:flex;
-                gap:8px;
-                margin-top:14px;
-            }}
+.stats{{
+    display:flex;
+    gap:8px;
+    margin-top:14px;
+}}
 
-            .stat{{
-                flex:1;
-                padding:10px;
-                border-radius:14px;
-                text-align:center;
-                font-size:13px;
-            }}
+.stat{{
+    flex:1;
+    padding:10px;
+    border-radius:14px;
+    text-align:center;
+    font-size:13px;
+}}
 
-            .income{{
-                background:#143d1f;
-            }}
+.income{{
+    background:#143d1f;
+}}
 
-            .expense{{
-                background:#4a1717;
-            }}
+.expense{{
+    background:#4a1717;
+}}
 
-            .card{{
-                background:#1a1d24;
-                border-radius:18px;
-                padding:14px;
-                margin-top:14px;
-            }}
+.card{{
+    background:#1a1d24;
+    border-radius:18px;
+    padding:14px;
+    margin-top:14px;
+}}
 
-            h2{{
-                margin-top:0;
-                font-size:18px;
-            }}
+h2{{
+    margin-top:0;
+    font-size:18px;
+}}
 
-            input, select{{
-                width:100%;
-                padding:12px;
-                margin-top:8px;
-                border:none;
-                border-radius:12px;
-                background:#2a2f3a;
-                color:white;
-                box-sizing:border-box;
-                font-size:14px;
-            }}
+input,
+select{{
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border:none;
+    border-radius:12px;
+    background:#2a2f3a;
+    color:white;
+    font-size:14px;
+}}
 
-            button{{
-                width:100%;
-                padding:12px;
-                border:none;
-                border-radius:12px;
-                margin-top:8px;
-                font-size:14px;
-                font-weight:bold;
-                color:white;
-            }}
+button{{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:12px;
+    margin-top:8px;
+    font-size:14px;
+    font-weight:bold;
+    color:white;
+}}
 
-            .income-btn{{
-                background:#4caf50;
-            }}
+.income-btn{{
+    background:#4caf50;
+}}
 
-            .expense-btn{{
-                background:#ff5252;
-            }}
+.expense-btn{{
+    background:#ff5252;
+}}
 
-            .transaction{{
-                background:#232833;
-                border-radius:14px;
-                padding:12px;
-                margin-top:8px;
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-            }}
+.transaction{{
+    background:#232833;
+    border-radius:14px;
+    padding:12px;
+    margin-top:8px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}}
 
-            .transaction-title{{
-                font-weight:bold;
-                font-size:14px;
-            }}
+.transaction-title{{
+    font-weight:bold;
+    font-size:14px;
+}}
 
-            .transaction-account{{
-                opacity:0.7;
-                margin-top:2px;
-                font-size:11px;
-            }}
+.transaction-account{{
+    opacity:0.7;
+    margin-top:2px;
+    font-size:11px;
+}}
 
-            .transaction-amount{{
-                font-weight:bold;
-                font-size:15px;
-            }}
+.transaction-amount{{
+    font-weight:bold;
+    font-size:15px;
+}}
 
-            .analytics-item{{
-                margin-top:12px;
-            }}
+.analytics-item{{
+    margin-top:12px;
+}}
 
-            .analytics-top{{
-                display:flex;
-                justify-content:space-between;
-                margin-bottom:5px;
-                font-size:13px;
-            }}
+.analytics-top{{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:5px;
+    font-size:13px;
+}}
 
-            .bar-bg{{
-                width:100%;
-                height:10px;
-                background:#2a2f3a;
-                border-radius:20px;
-                overflow:hidden;
-            }}
+.bar-bg{{
+    width:100%;
+    height:10px;
+    background:#2a2f3a;
+    border-radius:20px;
+    overflow:hidden;
+}}
 
-            .bar{{
-                height:100%;
-                background:#4caf50;
-            }}
+.bar{{
+    height:100%;
+    background:#4caf50;
+}}
 
-            .bottom-nav{{
-                position:fixed;
-                bottom:0;
-                left:0;
-                width:100%;
-                background:#171a20;
-                display:flex;
-                justify-content:space-around;
-                padding:10px 0;
-                border-top:1px solid #2a2f3a;
-                z-index:999;
-            }}
+.bottom-nav{{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    background:#171a20;
+    display:flex;
+    justify-content:space-around;
+    padding:10px 0;
+    border-top:1px solid #2a2f3a;
+}}
 
-            .bottom-nav a{{
-                color:white;
-                text-decoration:none;
-                display:flex;
-                flex-direction:column;
-                align-items:center;
-                font-size:11px;
-                opacity:0.8;
-            }}
+.bottom-nav a{{
+    color:white;
+    text-decoration:none;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    font-size:11px;
+}}
 
-            .bottom-nav a span{{
-                margin-top:4px;
-            }}
+.bottom-nav a span{{
+    margin-top:4px;
+}}
 
-            .floating-btn{{
-                position:fixed;
-                right:18px;
-                bottom:78px;
-                width:56px;
-                height:56px;
-                border-radius:50%;
-                background:#4caf50;
-                display:flex;
-                align-items:center;
-                justify-content:center;
-                font-size:34px;
-                font-weight:bold;
-                box-shadow:0 6px 20px rgba(0,0,0,0.4);
-            }}
+.floating-btn{{
+    position:fixed;
+    right:18px;
+    bottom:78px;
+    width:56px;
+    height:56px;
+    border-radius:50%;
+    background:#4caf50;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:34px;
+    font-weight:bold;
+}}
 
-        </style>
+</style>
 
-    </head>
+</head>
 
-    <body>
+<body>
 
-        <div class="container">
+<div class="container">
 
-            <div class="header" id="top">
+    <div class="header" id="top">
+        Sage Finance
+    </div>
 
-                Sage Finance
+    <div class="balance-card">
 
+        <div class="balance-label">
+            Общий баланс
+        </div>
+
+        <div class="balance">
+            {balance} ₽
+        </div>
+
+        <div class="stats">
+
+            <div class="stat income">
+                Доход<br>
+                {income_total} ₽
             </div>
 
-            <div class="balance-card">
-
-                <div class="balance-label">
-
-                    Общий баланс
-
-                </div>
-
-                <div class="balance">
-
-                    {balance} ₽
-
-                </div>
-
-                <div class="stats">
-
-                    <div class="stat income">
-
-                        Доход<br>
-                        {income_total} ₽
-
-                    </div>
-
-                    <div class="stat expense">
-
-                        Расход<br>
-                        {expense_total} ₽
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="card">
-
-                <h2>
-                    Добавить доход
-                </h2>
-
-                <form action="/income">
-
-                    <input
-                        type="hidden"
-                        name="user_id"
-                        value="{user_id}"
-                    >
-
-                    <input
-                        type="number"
-                        name="amount"
-                        placeholder="Сумма"
-                        required
-                    >
-
-                    <select name="category">
-
-                        <option>
-                            💼 Зарплата
-                        </option>
-
-                        <option>
-                            💰 Подработка
-                        </option>
-
-                        <option>
-                            📦 Другое
-                        </option>
-
-                    </select>
-
-                    <select name="account">
-
-                        <option>
-                            💳 Карта
-                        </option>
-
-                        <option>
-                            💵 Наличные
-                        </option>
-
-                        <option>
-                            🏢 Бизнес
-                        </option>
-
-                    </select>
-
-                    <button
-                        class="income-btn"
-                        type="submit"
-                    >
-
-                        ➕ Добавить доход
-
-                    </button>
-
-                </form>
-
-            </div>
-
-            <div class="card">
-
-                <h2>
-                    Добавить расход
-                </h2>
-
-                <form action="/expense">
-
-                    <input
-                        type="hidden"
-                        name="user_id"
-                        value="{user_id}"
-                    >
-
-                    <input
-                        type="number"
-                        name="amount"
-                        placeholder="Сумма"
-                        required
-                    >
-
-                    <select name="category">
-
-                        <option>
-                            🍔 Еда
-                        </option>
-
-                        <option>
-                            🚕 Транспорт
-                        </option>
-
-                        <option>
-                            🛍 Покупки
-                        </option>
-
-                        <option>
-                            🎮 Развлечения
-                        </option>
-
-                        <option>
-                            📦 Другое
-                        </option>
-
-                    </select>
-
-                    <select name="account">
-
-                        <option>
-                            💳 Карта
-                        </option>
-
-                        <option>
-                            💵 Наличные
-                        </option>
-
-                        <option>
-                            🏢 Бизнес
-                        </option>
-
-                    </select>
-
-                    <button
-                        class="expense-btn"
-                        type="submit"
-                    >
-
-                        ➖ Добавить расход
-
-                    </button>
-
-                </form>
-
-            </div>
-
-            <div class="card" id="analytics">
-
-                <h2>
-                    Аналитика
-                </h2>
-
-                {analytics_html}
-
-            </div>
-
-            <div class="card" id="history">
-
-                <h2>
-                    История операций
-                </h2>
-
-                {history_html}
-
+            <div class="stat expense">
+                Расход<br>
+                {expense_total} ₽
             </div>
 
         </div>
 
-        <div class="floating-btn">
-            +
-        </div>
+    </div>
 
-        <div class="bottom-nav">
+    <div class="card">
 
-            <a href="#top">
-                🏠
-                <span>Главная</span>
-            </a>
+        <h2>Добавить доход</h2>
 
-            <a href="#analytics">
-                📊
-                <span>Аналитика</span>
-            </a>
+        <form action="/income">
 
-            <a href="#history">
-                🧾
-                <span>История</span>
-            </a>
+            <input
+                type="hidden"
+                name="user_id"
+                value="{user_id}"
+            >
 
-        </div>
+            <input
+                type="number"
+                name="amount"
+                placeholder="Сумма"
+                required
+            >
 
-    </body>
+            <select name="category">
 
-    </html>
-    """
+                <option>💼 Зарплата</option>
+
+                <option>💰 Подработка</option>
+
+                <option>📦 Другое</option>
+
+            </select>
+
+            <select name="account">
+
+                <option>💳 Карта</option>
+
+                <option>💵 Наличные</option>
+
+                <option>🏢 Бизнес</option>
+
+            </select>
+
+            <button
+                class="income-btn"
+                type="submit"
+            >
+                ➕ Добавить доход
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Добавить расход</h2>
+
+        <form action="/expense">
+
+            <input
+                type="hidden"
+                name="user_id"
+                value="{user_id}"
+            >
+
+            <input
+                type="number"
+                name="amount"
+                placeholder="Сумма"
+                required
+            >
+
+            <select name="category">
+
+                <option>🍔 Еда</option>
+
+                <option>🚕 Транспорт</option>
+
+                <option>🛍 Покупки</option>
+
+                <option>🎮 Развлечения</option>
+
+                <option>📦 Другое</option>
+
+            </select>
+
+            <select name="account">
+
+                <option>💳 Карта</option>
+
+                <option>💵 Наличные</option>
+
+                <option>🏢 Бизнес</option>
+
+            </select>
+
+            <button
+                class="expense-btn"
+                type="submit"
+            >
+                ➖ Добавить расход
+            </button>
+
+        </form>
+
+    </div>
+
+    <div class="card" id="analytics">
+
+        <h2>Аналитика</h2>
+
+        {analytics_html}
+
+    </div>
+
+    <div class="card" id="history">
+
+        <h2>История операций</h2>
+
+        {history_html}
+
+    </div>
+
+</div>
+
+<div class="floating-btn">
+    +
+</div>
+
+<div class="bottom-nav">
+
+    <a href="#top">
+        🏠
+        <span>Главная</span>
+    </a>
+
+    <a href="#analytics">
+        📊
+        <span>Аналитика</span>
+    </a>
+
+    <a href="#history">
+        🧾
+        <span>История</span>
+    </a>
+
+</div>
+
+</body>
+
+</html>
+"""
 
 
 @app.route("/income")
 def income():
 
-    user_id = request.args.get(
-        "user_id",
-        "1"
-    )
+    user_id = request.args.get("user_id", "1")
 
-    amount = int(
-        request.args.get(
-            "amount",
-            0
-        )
-    )
+    amount = int(request.args.get("amount", 0))
 
     category = request.args.get(
         "category",
@@ -778,17 +705,9 @@ def income():
 @app.route("/expense")
 def expense():
 
-    user_id = request.args.get(
-        "user_id",
-        "1"
-    )
+    user_id = request.args.get("user_id", "1")
 
-    amount = int(
-        request.args.get(
-            "amount",
-            0
-        )
-    )
+    amount = int(request.args.get("amount", 0))
 
     category = request.args.get(
         "category",
