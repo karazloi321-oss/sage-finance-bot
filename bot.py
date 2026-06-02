@@ -132,21 +132,23 @@ def home():
 
         <script>
 
-            async function addIncome(){
+function addIncome(){
 
-                await fetch("/income")
+    fetch("/income")
+    .then(() => {
+        location.reload()
+    })
+}
 
-                location.reload()
-            }
+function addExpense(){
 
-            async function addExpense(){
+    fetch("/expense")
+    .then(() => {
+        location.reload()
+    })
+}
 
-                await fetch("/expense")
-
-                location.reload()
-            }
-
-        </script>
+</script>
 
     </body>
 
