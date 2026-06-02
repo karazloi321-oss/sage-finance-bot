@@ -58,6 +58,32 @@ def home():
         return "", 200
 
     balance = data.get("balance", 0)
+    history_html = ""
+
+for item in reversed(
+    data.get(
+        "transactions",
+        []
+    )[-10:]
+):
+
+    history_html += f"""
+
+    <div style="
+        background:#f2f2f2;
+        padding:12px;
+        border-radius:12px;
+        margin-top:10px;
+    ">
+        {item}
+        <h2>
+    История
+</h2>
+
+{history_html}
+    </div>
+
+    """
 
     return f"""
 
@@ -107,39 +133,36 @@ def home():
         </style>
 
     </head>
+  </body>
+<form action="/income" method="get">
 
-    <body>
+    <input
+        type="number"
+        name="amount"
+        placeholder="Сумма дохода"
+        required
+    >
 
-        <div class="card">
-
-            <h1>
-                Sage Finance
-            </h1>
-
-            <div class="balance">
-                {balance} ₽
-            </div>
-
-            <button onclick="addIncome()">
-                ➕ Доход +100
-            </button>
-
-            <button onclick="addExpense()">
-                ➖ Расход -100
-            </button>
-
-        </div>
-
-        <a href="/income">
-    <button>
-        ➕ Доход +100
+    <button type="submit">
+        ➕ Добавить доход
     </button>
-</a>
 
-<a href="/expense">
-    <button>
-        ➖ Расход -100
+</form>
+
+<form action="/expense" method="get">
+
+    <input
+        type="number"
+        name="amount"
+        placeholder="Сумма расхода"
+        required
+    >
+
+    <button type="submit">
+        ➖ Добавить расход
     </button>
+
+</form>
 </a>
 
     </body>
@@ -153,11 +176,57 @@ def income():
 
     global data
 
-    data["balance"] += 100
+    amount = int(
+        request.args.get(
+            "amount",
+            0
+        )
+    )
+
+    data["balance"] += amount
+
+    if "transactions" not in data:
+
+        data["transactions"] = []
+
+    data["transactions"].append(
+        f"➕ Доход: {amount} ₽"
+    )
 
     save_data(data)
 
-    return "ok"
+    return '''
+    <meta http-equiv="refresh" content="0; url=/">
+    '''
+
+
+@app.route("/expense")
+def expense():
+
+    global data
+
+    amount = int(
+        request.args.get(
+            "amount",
+            0
+        )
+    )
+
+    data["balance"] -= amount
+
+    if "transactions" not in data:
+
+        data["transactions"] = []
+
+    data["transactions"].append(
+        f"➖ Расход: {amount} ₽"
+    )
+
+    save_data(data)
+
+    return '''
+    <meta http-equiv="refresh" content="0; url=/">
+    '''
 
 
 @app.route("/expense")
