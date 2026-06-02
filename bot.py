@@ -52,90 +52,90 @@ def save_data(data):
 
 
 data = load_data()
-
 @app.route("/", methods=["GET", "HEAD"])
 def home():
 
-    if os.environ.get("REQUEST_METHOD") == "HEAD":
+    if request.method == "HEAD":
+
         return "", 200
 
-    history_html = ""
+    try:
 
-    for item in reversed(data["transactions"][-10:]):
+        balance = data.get("balance", 0)
 
-        history_html += f"""
-        <div class='item'>
-            {item}
-        </div>
-        """
+        transactions = data.get(
+            "transactions",
+            []
+        )
+
+        history_html = ""
+
+        for item in reversed(
+            transactions[-10:]
+        ):
+
+            history_html += f"""
+            <div class='item'>
+                {item}
+            </div>
+            """
+
+    except Exception as e:
+
+        return str(e)
 
     return f"""
-    <!DOCTYPE html>
 
-    <html lang="ru">
+    <html>
 
     <head>
 
-        <meta charset="UTF-8">
-
         <meta
             name="viewport"
-            content="width=device-width, initial-scale=1.0"
+            content="width=device-width, initial-scale=1"
         >
-
-        <title>Sage Finance</title>
 
         <style>
 
             body{{
-                margin:0;
-                padding:20px;
                 background:#d9e5d6;
                 font-family:sans-serif;
+                padding:20px;
             }}
 
             .card{{
                 background:white;
-                border-radius:24px;
                 padding:25px;
+                border-radius:24px;
                 max-width:450px;
                 margin:auto;
             }}
 
-            h1{{
-                text-align:center;
-            }}
-
             .balance{{
                 font-size:42px;
-                text-align:center;
                 font-weight:bold;
-                margin:25px 0;
+                text-align:center;
+                margin:20px 0;
             }}
 
             button{{
                 width:100%;
+                padding:18px;
                 border:none;
                 border-radius:18px;
-                padding:18px;
-                margin-top:12px;
                 background:#7c9b76;
                 color:white;
                 font-size:18px;
+                margin-top:12px;
             }}
 
             input{{
                 width:100%;
+                padding:18px;
                 border:none;
                 border-radius:18px;
-                padding:18px;
                 margin-top:12px;
                 box-sizing:border-box;
-                font-size:18px;
-            }}
-
-            .history{{
-                margin-top:25px;
             }}
 
             .item{{
@@ -153,10 +153,14 @@ def home():
 
         <div class="card">
 
-            <h1>Sage Finance</h1>
+            <h1>
+                Sage Finance
+            </h1>
 
             <div class="balance">
-                {data["balance"]} ₽
+
+                {balance} ₽
+
             </div>
 
             <input
@@ -173,15 +177,11 @@ def home():
                 ➖ Расход
             </button>
 
-            <div class="history">
+            <h2>
+                История
+            </h2>
 
-                <h2>
-                    История
-                </h2>
-
-                {history_html}
-
-            </div>
+            {history_html}
 
         </div>
 
@@ -225,6 +225,7 @@ def home():
 
     </html>
     """
+
 
 
 @app.route("/income/<amount>")
