@@ -153,9 +153,10 @@ def home():
 
         </div>
 
-        """
+        
 
     return f"""
+        """
 
 <!DOCTYPE html>
 
