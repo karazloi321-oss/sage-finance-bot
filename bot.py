@@ -965,6 +965,8 @@ document.getElementById(
 'expenseChart'
 );
 
+if(ctx){
+
 new Chart(ctx, {
 
 type:'doughnut',
@@ -992,6 +994,8 @@ borderWidth:0
 }
 
 });
+
+}
 
 const navItems =
 document.querySelectorAll(
