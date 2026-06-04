@@ -1,3 +1,3 @@
 flask
-pytelegrambotapi
-gunicorn
+pyTelegramBotAPI
+openpyxl
