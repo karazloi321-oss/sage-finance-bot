@@ -1,0 +1,78 @@
+from flask import Flask
+import threading
+import os
+import telebot
+
+from core.db import init_db
+from routes.operations import operations_bp
+from routes.goals import goals_bp
+
+TOKEN = os.getenv("TOKEN")
+
+app = Flask(__name__)
+bot = telebot.TeleBot(TOKEN)
+
+# =========================
+# INIT DB
+# =========================
+init_db()
+
+# =========================
+# REGISTER ROUTES
+# =========================
+app.register_blueprint(operations_bp)
+app.register_blueprint(goals_bp)
+
+# =========================
+# IMPORT HOME AFTER INIT (ВАЖНО)
+# =========================
+from core.analytics import (
+    calculate_income,
+    calculate_expense,
+    total_balance
+)
+
+from core.storage import get_transactions
+
+@app.route("/")
+def home():
+
+    user_id = "demo"
+
+    rows = get_transactions(user_id)
+
+    return {
+        "income": calculate_income(rows),
+        "expense": calculate_expense(rows),
+        "balance": total_balance(rows)
+    }
+
+# =========================
+# TELEGRAM BOT
+# =========================
+
+@bot.message_handler(commands=["start"])
+def start(message):
+    bot.send_message(message.chat.id, "Sage Finance V8 работает")
+
+def run_bot():
+    while True:
+        try:
+            bot.remove_webhook()
+            bot.infinity_polling(skip_pending=True)
+        except Exception as e:
+            print("BOT ERROR:", e)
+
+# =========================
+# START APP
+# =========================
+
+if __name__ == "__main__":
+    threading.Thread(target=run_bot, daemon=True).start()
+
+    port = int(os.environ.get("PORT", 10000))
+
+    app.run(
+        host="0.0.0.0",
+        port=port
+    )
