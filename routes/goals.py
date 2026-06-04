@@ -1,5 +1,4 @@
 from flask import Blueprint, request, redirect
-
 from core.storage import load_data, save_data
 
 goals_bp = Blueprint("goals", __name__)
