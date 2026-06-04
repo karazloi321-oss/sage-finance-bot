@@ -1,22 +1,49 @@
-import json
-import os
+from core.db import get_conn
 
-DATA_FILE = "data.json"
+def add_transaction(account, t_type, wallet, amount, category):
+    conn = get_conn()
+    c = conn.cursor()
 
-def load_data():
-    if not os.path.exists(DATA_FILE):
-        return {
-            "personal": {"cash": 0, "card": 0, "expenses": [], "history": []},
-            "business": {"cash": 0, "card": 0, "expenses": [], "history": []},
-            "savings": {"cash": 0, "card": 0},
-            "debts": [],
-            "goals": []
-        }
+    c.execute("""
+        INSERT INTO transactions
+        (account, type, wallet, amount, category, date, timestamp)
+        VALUES (?, ?, ?, ?, ?, datetime('now'), strftime('%s','now'))
+    """, (account, t_type, wallet, amount, category))
 
-    with open(DATA_FILE, "r", encoding="utf-8") as f:
-        return json.load(f)
+    conn.commit()
+    conn.close()
 
 
-def save_data(data):
-    with open(DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=4)
+def get_all_transactions():
+    conn = get_conn()
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM transactions ORDER BY timestamp DESC")
+    rows = c.fetchall()
+
+    conn.close()
+    return rows
+
+
+def get_goals():
+    conn = get_conn()
+    c = conn.cursor()
+
+    c.execute("SELECT * FROM goals")
+    rows = c.fetchall()
+
+    conn.close()
+    return rows
+
+
+def add_goal(name, target):
+    conn = get_conn()
+    c = conn.cursor()
+
+    c.execute("""
+        INSERT INTO goals (name, target, saved)
+        VALUES (?, ?, 0)
+    """, (name, target))
+
+    conn.commit()
+    conn.close()
