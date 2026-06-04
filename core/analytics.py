@@ -10,14 +10,13 @@ def expense_stats(expenses):
     stats = {}
 
     for item in expenses:
-        cat = item["category"]
-        stats[cat] = stats.get(cat, 0) + item["amount"]
+        cat = item.get("category", "other")
+        stats[cat] = stats.get(cat, 0) + item.get("amount", 0)
 
     return stats
 
 
-def top_category(expense_stats_dict):
-    if not expense_stats_dict:
+def top_category(stats):
+    if not stats:
         return "Нет данных"
-
-    return max(expense_stats_dict, key=expense_stats_dict.get)
+    return max(stats, key=stats.get)
