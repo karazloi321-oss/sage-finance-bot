@@ -1,6 +1,13 @@
+from flask import Blueprint, request, redirect
+import time
+from datetime import datetime
+
+from core.storage import load_data, save_data
 from core.safety import validate_amount, safe_subtract
 
-@app.route("/add_operation", methods=["POST"])
+operations_bp = Blueprint("operations", __name__)
+
+@operations_bp.route("/add_operation", methods=["POST"])
 def add_operation():
 
     data = load_data()
