@@ -10,6 +10,18 @@ from core.finance import total_balance
 
 from routes.operations import operations_bp
 from routes.goals import goals_bp
+from core.analytics import (
+    calculate_income,
+    calculate_expense,
+    expense_stats,
+    top_category
+)
+
+from core.safety import (
+    safe_add,
+    safe_subtract,
+    validate_amount
+)
 
 TOKEN = os.getenv("TOKEN")
 
