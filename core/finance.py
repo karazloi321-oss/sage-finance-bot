@@ -1,2 +1,2 @@
 def total_balance(section):
-    return section["cash"] + section["card"]
+    return section.get("cash", 0) + section.get("card", 0)
