@@ -1,0 +1,53 @@
+body {
+    margin:0;
+    background:#0d1118;
+    color:white;
+    font-family:Arial;
+}
+
+.container {
+    max-width:800px;
+    margin:auto;
+    padding:20px;
+}
+
+.card {
+    background:#161f2d;
+    padding:20px;
+    border-radius:20px;
+    margin-top:20px;
+}
+
+.balance {
+    font-size:40px;
+    font-weight:bold;
+}
+
+.input {
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    border-radius:12px;
+    border:none;
+    background:#222d40;
+    color:white;
+}
+
+.button {
+    width:100%;
+    padding:14px;
+    margin-top:10px;
+    background:#7db1d4;
+    border:none;
+    border-radius:12px;
+    font-weight:bold;
+}
+
+.history-item {
+    display:flex;
+    justify-content:space-between;
+    padding:12px;
+    background:#222d40;
+    margin-top:10px;
+    border-radius:12px;
+}
