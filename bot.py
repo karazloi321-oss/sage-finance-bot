@@ -57,15 +57,23 @@ def home():
 
     all_history = sorted(all_history, key=lambda x: x["timestamp"], reverse=True)
 
+    income_total = calculate_income(all_history)
+    expense_total = calculate_expense(all_history)
+
+    personal_stats = expense_stats(data["personal"]["expenses"])
+    top_expense = top_category(personal_stats)
+
     return render_template(
         "index.html",
         total_all=total_all,
         personal_total=personal_total,
         business_total=business_total,
         savings_total=savings_total,
-        history=all_history
+        history=all_history,
+        income_total=income_total,
+        expense_total=expense_total,
+        top_category=top_expense
     )
-
 # =====================================================
 # TELEGRAM
 # =====================================================
