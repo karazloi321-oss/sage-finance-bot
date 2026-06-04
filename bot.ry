@@ -1,0 +1,114 @@
+from flask import Flask, render_template, request, redirect, send_file
+import telebot
+from telebot import types
+import threading
+import os
+
+from core.db import init_db
+from core.storage import add_transaction, get_transactions
+from core.storage import add_goal, get_goals
+
+from core.analytics import (
+    filter_by_month,
+    calculate_income,
+    calculate_expense,
+    expense_stats,
+    top_category,
+    total_balance
+)
+
+from core.export import export_to_csv
+
+TOKEN = os.getenv("TOKEN")
+
+app = Flask(__name__)
+bot = telebot.TeleBot(TOKEN)
+
+init_db()
+
+# =========================
+# HOME
+# =========================
+
+@app.route("/")
+def home():
+
+    user_id = "demo"
+
+    rows = get_transactions(user_id)
+
+    income = calculate_income(rows)
+    expense = calculate_expense(rows)
+
+    balance = total_balance(rows)
+
+    stats = expense_stats(rows)
+
+    return render_template(
+        "index.html",
+        total_all=balance,
+        income_total=income,
+        expense_total=expense,
+        stats=stats,
+        history=rows
+    )
+
+# =========================
+# EXPORT CSV
+# =========================
+
+@app.route("/export")
+def export():
+
+    user_id = "demo"
+
+    rows = get_transactions(user_id)
+
+    file = export_to_csv(rows, "finance_export.csv")
+
+    return send_file(file, as_attachment=True)
+
+# =========================
+# TELEGRAM
+# =========================
+
+@bot.message_handler(commands=["start"])
+def start(message):
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
+    web_app = types.WebAppInfo("https://sage-finance.onrender.com/")
+
+    btn = types.KeyboardButton(
+        text="🏦 Открыть Sage Finance",
+        web_app=web_app
+    )
+
+    markup.add(btn)
+
+    bot.send_message(
+        message.chat.id,
+        "🏦 Sage Finance V7 (analytics + export)",
+        reply_markup=markup
+    )
+
+# =========================
+# BOT LOOP
+# =========================
+
+def run_bot():
+
+    while True:
+        try:
+            bot.remove_webhook()
+            bot.infinity_polling(skip_pending=True)
+        except Exception as e:
+            print("BOT ERROR:", e)
+
+# =========================
+# RUN
+# =========================
+
+if __name__ == "__main__":
+    threading.Thread(target=run_bot, daemon=True).start()
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 10000)))
