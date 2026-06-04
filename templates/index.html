@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Sage Finance</title>
+
+<link rel="stylesheet" href="/static/style.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card balance-card">
+    <div>💰 Общий баланс</div>
+    <div class="balance">{{ total_all }} ₽</div>
+
+    <div class="sub">
+        <div>Личный: {{ personal_total }}</div>
+        <div>Бизнес: {{ business_total }}</div>
+    </div>
+</div>
+
+<!-- ADD OPERATION -->
+<div class="card">
+
+<form method="POST" action="/add_operation">
+
+<input type="hidden" name="account" value="personal">
+
+<select name="type" class="input">
+<option value="income">Доход</option>
+<option value="expense">Расход</option>
+</select>
+
+<select name="wallet" class="input">
+<option value="cash">Cash</option>
+<option value="card">Card</option>
+</select>
+
+<input type="number" name="amount" class="input" placeholder="Amount">
+<input type="text" name="category" class="input" placeholder="Category">
+
+<button class="button">Save</button>
+
+</form>
+
+</div>
+
+<!-- HISTORY -->
+<div class="card">
+<h3>History</h3>
+
+{% for item in history[:20] %}
+
+<div class="history-item">
+    <div>
+        {{ item.category }} <br>
+        <small>{{ item.date }}</small>
+    </div>
+
+    <div>
+        {{ item.amount }} ₽
+    </div>
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
