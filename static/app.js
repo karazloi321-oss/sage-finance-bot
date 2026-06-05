@@ -204,3 +204,64 @@ async function saveTransaction(){
 }
 
 loadTransactions();
+function openSection(id, element){
+
+    document
+        .querySelectorAll(".section")
+        .forEach(section => {
+
+            section.classList.remove(
+                "active-section"
+            );
+
+        });
+
+    document
+        .getElementById(id)
+        .classList.add(
+            "active-section"
+        );
+
+    document
+        .querySelectorAll(".nav-item")
+        .forEach(item => {
+
+            item.classList.remove(
+                "active-nav"
+            );
+
+        });
+
+    if(element){
+
+        element.classList.add(
+            "active-nav"
+        );
+
+    }
+
+}
+
+function openSidebar(){
+
+    document
+        .getElementById("sidebar")
+        .classList.add("open");
+
+    document
+        .getElementById("overlay")
+        .classList.add("show");
+
+}
+
+function closeSidebar(){
+
+    document
+        .getElementById("sidebar")
+        .classList.remove("open");
+
+    document
+        .getElementById("overlay")
+        .classList.remove("show");
+
+}
