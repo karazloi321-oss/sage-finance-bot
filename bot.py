@@ -63,13 +63,14 @@ def init_db():
     # TRANSACTIONS
     c.execute("""
     CREATE TABLE IF NOT EXISTS transactions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT,
-        type TEXT,
-        amount REAL,
-        category TEXT,
-        timestamp REAL
-    )
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT,
+    account TEXT,
+    type TEXT,
+    amount REAL,
+    category TEXT,
+    timestamp REAL
+)
     """)
 
     conn.commit()
