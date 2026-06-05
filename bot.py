@@ -60,7 +60,25 @@ def init_db():
         username TEXT
     )
     """)
+    # BUDGETS
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS budgets (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
+        category TEXT,
+        amount REAL
+    )
+    """)
 
+    # SUBSCRIPTIONS
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS subscriptions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
+        title TEXT,
+        amount REAL
+    )
+    """)
     # TRANSACTIONS
     c.execute("""
     CREATE TABLE IF NOT EXISTS transactions (
