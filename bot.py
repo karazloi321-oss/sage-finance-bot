@@ -85,13 +85,12 @@ init_db()
 # HOME
 # =========================
 
+from flask import render_template
+
 @app.route("/")
 def home():
 
-    return {
-        "app": "Sage Finance",
-        "status": "running"
-    }
+    return render_template("index.html")
 
 # =========================
 # HEALTH
