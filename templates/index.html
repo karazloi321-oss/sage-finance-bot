@@ -26,7 +26,13 @@ href="/static/style.css"
 <body>
 
 <!-- SIDEBAR -->
-
+<div
+class="sidebar-item"
+onclick="openSection('transfer-section')"
+>
+🔄 Переводы
+</div>
+  
 <div class="sidebar" id="sidebar">
 
 <div class="sidebar-header">
@@ -387,7 +393,56 @@ onclick="openSection('analytics-section', this)"
 </div>
 
 </div>
+<!-- TRANSFER -->
 
+<div
+class="section"
+id="transfer-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+🔄 Перевод между счетами
+</div>
+
+<select id="fromAccount">
+
+<option value="personal">
+👤 Личный
+</option>
+
+<option value="business">
+💼 Бизнес
+</option>
+
+</select>
+
+<select id="toAccount">
+
+<option value="business">
+💼 Бизнес
+</option>
+
+<option value="personal">
+👤 Личный
+</option>
+
+</select>
+
+<input
+type="number"
+id="transferAmount"
+placeholder="Сумма"
+/>
+
+<button onclick="transferMoney()">
+Перевести
+</button>
+
+</div>
+
+</div>
 <!-- MODAL -->
 
 <div class="modal" id="modal">
