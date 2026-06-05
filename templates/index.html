@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+/>
+
+<title>Sage Finance</title>
+
+<link
+rel="stylesheet"
+href="/static/style.css"
+/>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div class="sidebar" id="sidebar">
+
+<div class="sidebar-header">
+
+<div class="sidebar-logo">
+Sage Finance
+</div>
+
+<div
+class="sidebar-close"
+onclick="closeSidebar()"
+>
+✕
+</div>
+
+</div>
+
+<div class="sidebar-menu">
+
+<div
+class="sidebar-item"
+onclick="openSection('savings-section')"
+>
+💎 Сбережения
+</div>
+
+<div
+class="sidebar-item"
+onclick="openSection('debts-section')"
+>
+💳 Долги
+</div>
+
+<div
+class="sidebar-item"
+onclick="openSection('goals-section')"
+>
+🎯 Цели
+</div>
+
+<div
+class="sidebar-item"
+onclick="openSection('settings-section')"
+>
+⚙️ Настройки
+</div>
+
+</div>
+
+</div>
+
+<!-- OVERLAY -->
+
+<div
+class="overlay"
+id="overlay"
+onclick="closeSidebar()"
+></div>
+
+<!-- APP -->
+
+<div class="container">
+
+<!-- TOP -->
+
+<div class="topbar">
+
+<div
+class="menu-button"
+onclick="openSidebar()"
+>
+☰
+</div>
+
+<div>
+
+<div class="title">
+Sage Finance
+</div>
+
+<div class="subtitle">
+Финансовый контроль
+</div>
+
+</div>
+
+<div
+class="avatar"
+id="avatar"
+>
+👤
+</div>
+
+</div>
+
+<!-- HOME -->
+
+<div
+class="section active-section"
+id="home-section"
+>
+
+<div class="balance-card">
+
+<div class="balance-label">
+💰 Общий баланс
+</div>
+
+<div
+class="balance"
+id="balance"
+>
+0 ₽
+</div>
+
+</div>
+
+<div class="balances-grid">
+
+<div class="small-card">
+
+<div class="small-title">
+👤 Личный
+</div>
+
+<div
+class="small-value"
+id="personalBalance"
+>
+0 ₽
+</div>
+
+</div>
+
+<div class="small-card">
+
+<div class="small-title">
+💼 Бизнес
+</div>
+
+<div
+class="small-value"
+id="businessBalance"
+>
+0 ₽
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- OPERATIONS -->
+
+<div
+class="section"
+id="operations-section"
+>
+
+<div class="operations-buttons">
+
+<button onclick="openModal('income')">
+➕ Доход
+</button>
+
+<button onclick="openModal('expense')">
+➖ Расход
+</button>
+
+</div>
+
+</div>
+
+<!-- BUSINESS -->
+
+<div
+class="section"
+id="business-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+💼 Бизнес
+</div>
+
+<div class="coming-text">
+Скоро бизнес аналитика
+</div>
+
+</div>
+
+</div>
+
+<!-- HISTORY -->
+
+<div
+class="section"
+id="history-section"
+>
+
+<div class="section-title">
+📜 История
+</div>
+
+<div id="history"></div>
+
+</div>
+
+<!-- ANALYTICS -->
+
+<div
+class="section"
+id="analytics-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+📊 Статистика
+</div>
+
+<canvas id="chart"></canvas>
+
+</div>
+
+</div>
+
+<!-- SAVINGS -->
+
+<div
+class="section"
+id="savings-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+💎 Сбережения
+</div>
+
+<div class="coming-text">
+Скоро раздел сбережений
+</div>
+
+</div>
+
+</div>
+
+<!-- DEBTS -->
+
+<div
+class="section"
+id="debts-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+💳 Долги
+</div>
+
+<div class="coming-text">
+Скоро раздел долгов
+</div>
+
+</div>
+
+</div>
+
+<!-- GOALS -->
+
+<div
+class="section"
+id="goals-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+🎯 Цели
+</div>
+
+<div class="coming-text">
+Скоро финансовые цели
+</div>
+
+</div>
+
+</div>
+
+<!-- SETTINGS -->
+
+<div
+class="section"
+id="settings-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+⚙️ Настройки
+</div>
+
+<div class="coming-text">
+Скоро настройки
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+
+<div class="bottom-nav">
+
+<div
+class="nav-item active-nav"
+onclick="openSection('home-section', this)"
+>
+🏠
+<span>Главная</span>
+</div>
+
+<div
+class="nav-item"
+onclick="openSection('operations-section', this)"
+>
+💸
+<span>Операции</span>
+</div>
+
+<div
+class="nav-item"
+onclick="openSection('business-section', this)"
+>
+💼
+<span>Бизнес</span>
+</div>
+
+<div
+class="nav-item"
+onclick="openSection('history-section', this)"
+>
+📜
+<span>История</span>
+</div>
+
+<div
+class="nav-item"
+onclick="openSection('analytics-section', this)"
+>
+📊
+<span>Статистика</span>
+</div>
+
+</div>
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+<div class="modal-content">
+
+<div class="modal-title">
+Новая операция
+</div>
+
+<select id="account">
+
+<option value="personal">
+👤 Личный
+</option>
+
+<option value="business">
+💼 Бизнес
+</option>
+
+</select>
+
+<input
+type="number"
+id="amount"
+placeholder="Сумма"
+/>
+
+<input
+type="text"
+id="category"
+placeholder="Категория"
+/>
+
+<button onclick="saveTransaction()">
+Сохранить
+</button>
+
+</div>
+
+</div>
+
+<script src="/static/app.js"></script>
+
+</body>
+</html>
