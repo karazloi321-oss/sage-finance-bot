@@ -48,6 +48,10 @@ async function loadTransactions(){
 
     let balance = 0;
 
+let personal = 0;
+let business = 0;
+let savings = 0;
+
     data.forEach(item => {
 
         const div =
@@ -56,7 +60,35 @@ async function loadTransactions(){
         div.className = "history-item";
 
         let icon = "📈";
+if(item.account === "personal"){
 
+    if(item.type === "income"){
+        personal += item.amount;
+    }else{
+        personal -= item.amount;
+    }
+
+}
+
+if(item.account === "business"){
+
+    if(item.type === "income"){
+        business += item.amount;
+    }else{
+        business -= item.amount;
+    }
+
+}
+
+if(item.account === "savings"){
+
+    if(item.type === "income"){
+        savings += item.amount;
+    }else{
+        savings -= item.amount;
+    }
+
+}
         if(item.type === "expense"){
 
             icon = "📉";
@@ -168,7 +200,8 @@ async function saveTransaction(){
 
     const category =
         document.getElementById("category").value;
-
+const account =
+    document.getElementById("account").value;
     if(!amount || !category){
         return;
     }
@@ -189,7 +222,8 @@ async function saveTransaction(){
 
             amount:amount,
 
-            category:category
+            category:category,
+account:account
 
         })
 
@@ -265,3 +299,12 @@ function closeSidebar(){
         .classList.remove("show");
 
 }
+document.getElementById(
+    "personalBalance"
+).innerHTML =
+    personal + " ₽";
+
+document.getElementById(
+    "businessBalance"
+).innerHTML =
+    business + " ₽";
