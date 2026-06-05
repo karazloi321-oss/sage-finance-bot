@@ -19,6 +19,8 @@ href="/static/style.css"
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 
 <body>
@@ -28,6 +30,7 @@ href="/static/style.css"
 <div class="top">
 
 <div>
+
 <div class="title">
 Sage Finance
 </div>
@@ -35,6 +38,7 @@ Sage Finance
 <div class="subtitle">
 Финансовый контроль
 </div>
+
 </div>
 
 <div class="avatar" id="avatar">
@@ -57,13 +61,23 @@ Sage Finance
 
 <div class="actions">
 
-<button onclick="openIncome()">
+<button onclick="openModal('income')">
 ➕ Доход
 </button>
 
-<button onclick="openExpense()">
+<button onclick="openModal('expense')">
 ➖ Расход
 </button>
+
+</div>
+
+<div class="analytics-card">
+
+<div class="section-title">
+📊 Аналитика расходов
+</div>
+
+<canvas id="chart"></canvas>
 
 </div>
 
@@ -72,6 +86,43 @@ Sage Finance
 </div>
 
 <div id="history"></div>
+
+</div>
+
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+<div class="modal-content">
+
+<div class="modal-title">
+Новая операция
+</div>
+
+<input
+type="number"
+id="amount"
+placeholder="Сумма"
+/>
+
+<input
+type="text"
+id="category"
+placeholder="Категория"
+/>
+
+<button onclick="saveTransaction()">
+Сохранить
+</button>
+
+<button
+class="close-btn"
+onclick="closeModal()"
+>
+Закрыть
+</button>
+
+</div>
 
 </div>
 
