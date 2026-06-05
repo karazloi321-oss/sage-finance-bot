@@ -428,7 +428,261 @@ def run_bot():
             )
 
             time.sleep(5)
+# =====================================================
+# SAVE BUDGET
+# =====================================================
 
+@app.route(
+    "/save_budget",
+    methods=["POST"]
+)
+def save_budget():
+
+    data = request.json
+
+    user_id = str(
+        data.get("user_id")
+    )
+
+    category = data.get(
+        "category"
+    )
+
+    amount = float(
+        data.get(
+            "amount",
+            0
+        )
+    )
+
+    conn = get_conn()
+
+    c = conn.cursor()
+
+    c.execute("""
+
+    INSERT INTO budgets
+    (
+        user_id,
+        category,
+        amount
+    )
+    VALUES (?, ?, ?)
+
+    """, (
+
+        user_id,
+        category,
+        amount
+
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({
+        "status":"success"
+    })
+
+# =====================================================
+# GET BUDGETS
+# =====================================================
+
+@app.route(
+    "/budgets/<user_id>"
+)
+def budgets(user_id):
+
+    conn = get_conn()
+
+    c = conn.cursor()
+
+    c.execute("""
+
+    SELECT *
+    FROM budgets
+    WHERE user_id=?
+
+    """, (user_id,))
+
+    rows = c.fetchall()
+
+    conn.close()
+
+    result = []
+
+    for r in rows:
+
+        result.append({
+
+            "id":r["id"],
+
+            "category":r["category"],
+
+            "amount":r["amount"]
+
+        })
+
+    return jsonify(result)
+    # =====================================================
+# SAVE SUBSCRIPTION
+# =====================================================
+
+@app.route(
+    "/save_subscription",
+    methods=["POST"]
+)
+def save_subscription():
+
+    data = request.json
+
+    user_id = str(
+        data.get("user_id")
+    )
+
+    title = data.get(
+        "title"
+    )
+
+    amount = float(
+        data.get(
+            "amount",
+            0
+        )
+    )
+
+    conn = get_conn()
+
+    c = conn.cursor()
+
+    c.execute("""
+
+    INSERT INTO subscriptions
+    (
+        user_id,
+        title,
+        amount
+    )
+    VALUES (?, ?, ?)
+
+    """, (
+
+        user_id,
+        title,
+        amount
+
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({
+        "status":"success"
+    })
+
+# =====================================================
+# GET SUBSCRIPTIONS
+# =====================================================
+
+@app.route(
+    "/subscriptions/<user_id>"
+)
+def subscriptions(user_id):
+
+    conn = get_conn()
+
+    c = conn.cursor()
+
+    c.execute("""
+
+    SELECT *
+    FROM subscriptions
+    WHERE user_id=?
+
+    """, (user_id,))
+
+    rows = c.fetchall()
+
+    conn.close()
+
+    result = []
+
+    for r in rows:
+
+        result.append({
+
+            "id":r["id"],
+
+            "title":r["title"],
+
+            "amount":r["amount"]
+
+        })
+
+    return jsonify(result)
+    # =====================================================
+# AI ANALYTICS
+# =====================================================
+
+@app.route(
+    "/ai_analytics/<user_id>"
+)
+def ai_analytics(user_id):
+
+    conn = get_conn()
+
+    c = conn.cursor()
+
+    c.execute("""
+
+    SELECT
+    type,
+    SUM(amount) as total
+
+    FROM transactions
+
+    WHERE user_id=?
+
+    GROUP BY type
+
+    """, (user_id,))
+
+    rows = c.fetchall()
+
+    conn.close()
+
+    income = 0
+    expense = 0
+
+    for r in rows:
+
+        if r["type"] == "income":
+
+            income = r["total"]
+
+        if r["type"] == "expense":
+
+            expense = r["total"]
+
+    text = "Финансы стабильны"
+
+    if expense > income:
+
+        text = "Расходы превышают доходы"
+
+    elif income > expense * 2:
+
+        text = "Отличный контроль финансов"
+
+    elif expense > income * 0.8:
+
+        text = "Высокая финансовая нагрузка"
+
+    return jsonify({
+        "text":text
+    })
 # =====================================================
 # START
 # =====================================================
