@@ -464,3 +464,56 @@ async function deleteTransaction(id){
     loadTransactions();
 
 }
+async function transferMoney(){
+
+    const fromAccount = document
+        .getElementById("fromAccount")
+        .value;
+
+    const toAccount = document
+        .getElementById("toAccount")
+        .value;
+
+    const amount = parseFloat(
+
+        document
+            .getElementById("transferAmount")
+            .value
+
+    );
+
+    if(!amount || amount <= 0){
+
+        return;
+
+    }
+
+    await fetch("/transfer", {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            user_id:userId,
+
+            from_account:fromAccount,
+
+            to_account:toAccount,
+
+            amount:amount
+
+        })
+
+    });
+
+    document
+        .getElementById("transferAmount")
+        .value = "";
+
+    loadTransactions();
+
+}
