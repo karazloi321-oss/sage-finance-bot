@@ -556,9 +556,16 @@ placeholder="Сумма"
 </div>
 <!-- MODAL -->
 
-<div class="modal" id="modal">
+<div
+class="modal"
+id="modal"
+onclick="outsideModalClose(event)"
+>
 
-<div class="modal-content">
+<div
+class="modal-content"
+onclick="event.stopPropagation()"
+>
 
 <div class="modal-title">
 Новая операция
