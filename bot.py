@@ -77,7 +77,34 @@ def init_db():
     conn.commit()
 
     conn.close()
+# =====================================================
+# DELETE TRANSACTION
+# =====================================================
 
+@app.route(
+    "/delete_transaction/<int:transaction_id>",
+    methods=["DELETE"]
+)
+def delete_transaction(transaction_id):
+
+    conn = get_conn()
+
+    c = conn.cursor()
+
+    c.execute("""
+
+    DELETE FROM transactions
+    WHERE id=?
+
+    """, (transaction_id,))
+
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({
+        "status":"deleted"
+    })
 # =====================================================
 # INIT DB
 # =====================================================
