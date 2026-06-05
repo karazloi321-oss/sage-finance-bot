@@ -477,3 +477,21 @@ transform:translateY(0);
 }
 
 }
+.premium-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:18px;
+background:#1b2735;
+border-radius:22px;
+margin-top:14px;
+font-weight:800;
+}
+
+.ai-card{
+background:linear-gradient(
+135deg,
+#1c2d40,
+#324862
+);
+}
