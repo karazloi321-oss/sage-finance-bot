@@ -517,3 +517,174 @@ async function transferMoney(){
     loadTransactions();
 
 }
+async function saveBudget(){
+
+    const category = document
+        .getElementById("budgetCategory")
+        .value;
+
+    const amount = parseFloat(
+
+        document
+            .getElementById("budgetAmount")
+            .value
+
+    );
+
+    await fetch("/save_budget", {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            user_id:userId,
+
+            category:category,
+
+            amount:amount
+
+        })
+
+    });
+
+    loadBudgets();
+
+}
+
+async function loadBudgets(){
+
+    const response = await fetch(
+
+        `/budgets/${userId}`
+
+    );
+
+    const data = await response.json();
+
+    const list = document
+        .getElementById("budgetsList");
+
+    list.innerHTML = "";
+
+    data.forEach(item => {
+
+        list.innerHTML += `
+
+        <div class="premium-item">
+
+            <div>
+                📦 ${item.category}
+            </div>
+
+            <div>
+                ${item.amount} ₽
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+async function saveSubscription(){
+
+    const title = document
+        .getElementById("subscriptionTitle")
+        .value;
+
+    const amount = parseFloat(
+
+        document
+            .getElementById("subscriptionAmount")
+            .value
+
+    );
+
+    await fetch("/save_subscription", {
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+
+            user_id:userId,
+
+            title:title,
+
+            amount:amount
+
+        })
+
+    });
+
+    loadSubscriptions();
+
+}
+
+async function loadSubscriptions(){
+
+    const response = await fetch(
+
+        `/subscriptions/${userId}`
+
+    );
+
+    const data = await response.json();
+
+    const list = document
+        .getElementById("subscriptionsList");
+
+    list.innerHTML = "";
+
+    data.forEach(item => {
+
+        list.innerHTML += `
+
+        <div class="premium-item">
+
+            <div>
+                🔁 ${item.title}
+            </div>
+
+            <div>
+                ${item.amount} ₽
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+}
+
+async function loadAI(){
+
+    const response = await fetch(
+
+        `/ai_analytics/${userId}`
+
+    );
+
+    const data = await response.json();
+
+    document
+        .getElementById("aiText")
+        .innerHTML = data.text;
+
+}
+
+loadBudgets();
+
+loadSubscriptions();
+
+loadAI();
