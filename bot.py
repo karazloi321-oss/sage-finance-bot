@@ -179,7 +179,35 @@ def add_transaction():
     return jsonify({
         "status": "success"
     })
+@app.route("/analytics/<user_id>")
+def analytics(user_id):
 
+    conn = get_conn()
+
+    c = conn.cursor()
+
+    c.execute("""
+    SELECT category, SUM(amount) as total
+    FROM transactions
+    WHERE user_id=?
+    AND type='expense'
+    GROUP BY category
+    """, (user_id,))
+
+    rows = c.fetchall()
+
+    conn.close()
+
+    result = []
+
+    for r in rows:
+
+        result.append({
+            "category": r["category"],
+            "total": r["total"]
+        })
+
+    return jsonify(result)
 # =========================
 # GET TRANSACTIONS
 # =========================
