@@ -148,9 +148,18 @@ def add_transaction():
     data = request.json
 
     user_id = str(data.get("user_id"))
-    t_type = data.get("type")
-    amount = float(data.get("amount", 0))
-    category = data.get("category", "other")
+    account = data.get("account", "personal")
+
+t_type = data.get("type")
+
+amount = float(
+    data.get("amount", 0)
+)
+
+category = data.get(
+    "category",
+    "other"
+)
 
     if amount <= 0:
 
