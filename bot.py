@@ -120,7 +120,7 @@ def start(message):
     )
 
     web_app = telebot.types.WebAppInfo(
-        "https://YOUR-RENDER-URL.onrender.com"
+        "https://sage-finance.onrender.com"
     )
 
     btn = telebot.types.KeyboardButton(
