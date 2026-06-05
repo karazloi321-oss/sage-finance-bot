@@ -1,77 +1,81 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+/>
+
 <title>Sage Finance</title>
 
-<link rel="stylesheet" href="/static/style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link
+rel="stylesheet"
+href="/static/style.css"
+/>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
 </head>
 
 <body>
 
 <div class="container">
 
-<div class="card balance-card">
-    <div>💰 Общий баланс</div>
-    <div class="balance">{{ total_all }} ₽</div>
+<div class="top">
 
-    <div class="sub">
-        <div>Личный: {{ personal_total }}</div>
-        <div>Бизнес: {{ business_total }}</div>
-    </div>
+<div>
+<div class="title">
+Sage Finance
 </div>
 
-<!-- ADD OPERATION -->
-<div class="card">
+<div class="subtitle">
+Финансовый контроль
+</div>
+</div>
 
-<form method="POST" action="/add_operation">
-
-<input type="hidden" name="account" value="personal">
-
-<select name="type" class="input">
-<option value="income">Доход</option>
-<option value="expense">Расход</option>
-</select>
-
-<select name="wallet" class="input">
-<option value="cash">Cash</option>
-<option value="card">Card</option>
-</select>
-
-<input type="number" name="amount" class="input" placeholder="Amount">
-<input type="text" name="category" class="input" placeholder="Category">
-
-<button class="button">Save</button>
-
-</form>
+<div class="avatar" id="avatar">
+👤
+</div>
 
 </div>
 
-<!-- HISTORY -->
-<div class="card">
-<h3>History</h3>
+<div class="balance-card">
 
-{% for item in history[:20] %}
-
-<div class="history-item">
-    <div>
-        {{ item.category }} <br>
-        <small>{{ item.date }}</small>
-    </div>
-
-    <div>
-        {{ item.amount }} ₽
-    </div>
+<div class="balance-label">
+Общий баланс
 </div>
 
-{% endfor %}
+<div class="balance" id="balance">
+0 ₽
+</div>
 
 </div>
+
+<div class="actions">
+
+<button onclick="openIncome()">
+➕ Доход
+</button>
+
+<button onclick="openExpense()">
+➖ Расход
+</button>
+
+</div>
+
+<div class="history-title">
+История операций
+</div>
+
+<div id="history"></div>
 
 </div>
 
 <script src="/static/app.js"></script>
+
 </body>
 </html>
