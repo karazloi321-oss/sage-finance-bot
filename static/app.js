@@ -449,3 +449,18 @@ function closeSidebar(){
 auth();
 
 loadTransactions();
+async function deleteTransaction(id){
+
+    await fetch(
+
+        `/delete_transaction/${id}`,
+
+        {
+            method:"DELETE"
+        }
+
+    );
+
+    loadTransactions();
+
+}
