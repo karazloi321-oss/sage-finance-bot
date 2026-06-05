@@ -137,7 +137,57 @@ async function loadTransactions(){
     const history = document
         .getElementById("history");
 
-    history.innerHTML = "";
+    history.innerHTML += `
+
+<div class="history-item">
+
+    <div class="history-left">
+
+        <div class="history-icon">
+
+            ${
+                item.type === "income"
+                ? "📈"
+                : "📉"
+            }
+
+        </div>
+
+        <div>
+
+            <div class="history-category">
+                ${item.category}
+            </div>
+
+            <div class="history-account">
+                ${item.account}
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="history-right">
+
+        <div
+        class="history-amount"
+        style="color:${color}"
+        >
+            ${sign}${item.amount} ₽
+        </div>
+
+        <div
+        class="delete-btn"
+        onclick="deleteTransaction(${item.id})"
+        >
+            Удалить
+        </div>
+
+    </div>
+
+</div>
+
+`;
 
     totalBalance = 0;
 
