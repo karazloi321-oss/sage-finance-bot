@@ -122,9 +122,9 @@ def auth():
     c = conn.cursor()
 
     c.execute("""
-    INSERT OR IGNORE INTO users
-    (telegram_id, first_name, username)
-    VALUES (?, ?, ?)
+    INSERT INTO transactions
+(user_id, account, type, amount, category, timestamp)
+VALUES (?, ?, ?, ?, ?, ?)
     """, (
         telegram_id,
         first_name,
@@ -172,9 +172,9 @@ category = data.get(
     c = conn.cursor()
 
     c.execute("""
-    INSERT INTO transactions
-    (user_id, type, amount, category, timestamp)
-    VALUES (?, ?, ?, ?, ?)
+   INSERT INTO transactions
+(user_id, type, amount, category, timestamp)
+VALUES (?, ?, ?, ?, ?) 
     """, (
         user_id,
         t_type,
@@ -244,11 +244,14 @@ def transactions(user_id):
     for r in rows:
 
         result.append({
-            "id": r["id"],
-            "type": r["type"],
-            "amount": r["amount"],
-            "category": r["category"],
-            "timestamp": r["timestamp"]
+        (
+    user_id,
+    account,
+    t_type,
+    amount,
+    category,
+    time.time()
+)
         })
 
     return jsonify(result)
