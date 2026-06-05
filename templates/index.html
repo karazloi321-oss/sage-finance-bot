@@ -78,6 +78,26 @@ class="sidebar-item"
 onclick="openSection('settings-section')"
 >
 ⚙️ Настройки
+  <div
+class="sidebar-item"
+onclick="openSection('budgets-section')"
+>
+📦 Бюджеты
+</div>
+
+<div
+class="sidebar-item"
+onclick="openSection('subscriptions-section')"
+>
+🔁 Подписки
+</div>
+
+<div
+class="sidebar-item"
+onclick="openSection('ai-section')"
+>
+🤖 AI Finance
+</div>
 </div>
 
 </div>
@@ -263,7 +283,98 @@ id="analytics-section"
 </div>
 
 <!-- SAVINGS -->
+<!-- BUDGETS -->
 
+<div
+class="section"
+id="budgets-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+📦 Бюджеты
+</div>
+
+<input
+type="text"
+id="budgetCategory"
+placeholder="Категория"
+/>
+
+<input
+type="number"
+id="budgetAmount"
+placeholder="Лимит"
+/>
+
+<button onclick="saveBudget()">
+Сохранить бюджет
+</button>
+
+<div id="budgetsList"></div>
+
+</div>
+
+</div>
+
+<!-- SUBSCRIPTIONS -->
+
+<div
+class="section"
+id="subscriptions-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+🔁 Подписки
+</div>
+
+<input
+type="text"
+id="subscriptionTitle"
+placeholder="Название"
+/>
+
+<input
+type="number"
+id="subscriptionAmount"
+placeholder="Сумма"
+/>
+
+<button onclick="saveSubscription()">
+Добавить подписку
+</button>
+
+<div id="subscriptionsList"></div>
+
+</div>
+
+</div>
+
+<!-- AI -->
+
+<div
+class="section"
+id="ai-section"
+>
+
+<div class="card ai-card">
+
+<div class="section-title">
+🤖 AI Finance
+</div>
+
+<div id="aiText">
+
+Анализируем финансы...
+
+</div>
+
+</div>
+
+</div>
 <div
 class="section"
 id="savings-section"
