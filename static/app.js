@@ -688,3 +688,15 @@ loadBudgets();
 loadSubscriptions();
 
 loadAI();
+function outsideModalClose(event){
+
+    const modal = document
+        .getElementById("modal");
+
+    if(event.target === modal){
+
+        closeModal();
+
+    }
+
+}
