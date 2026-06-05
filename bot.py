@@ -417,20 +417,24 @@ def run_bot():
 
 if __name__ == "__main__":
 
-    threading.Thread(
-
-        target=run_bot,
-
-        daemon=True
-
-    ).start()
-
     port = int(
         os.environ.get(
             "PORT",
             10000
         )
     )
+
+    # запускаем polling только в главном процессе
+
+    if os.environ.get("WERKZEUG_RUN_MAIN") != "true":
+
+        threading.Thread(
+
+            target=run_bot,
+
+            daemon=True
+
+        ).start()
 
     logger.info(
         f"APP START PORT {port}"
@@ -440,6 +444,10 @@ if __name__ == "__main__":
 
         host="0.0.0.0",
 
-        port=port
+        port=port,
+
+        debug=False,
+
+        use_reloader=False
 
     )
