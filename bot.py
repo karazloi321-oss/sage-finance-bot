@@ -1,4 +1,3 @@
-```python
 from flask import Flask, render_template, request, jsonify
 import sqlite3
 import threading
