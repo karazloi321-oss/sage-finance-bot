@@ -838,13 +838,17 @@ def run_bot():
 
             bot.remove_webhook()
 
+            time.sleep(2)
+
             bot.infinity_polling(
 
                 timeout=30,
 
                 long_polling_timeout=30,
 
-                skip_pending=True
+                skip_pending=True,
+
+                allowed_updates=["message"]
 
             )
 
@@ -852,7 +856,13 @@ def run_bot():
 
             logger.error(f"BOT ERROR: {e}")
 
-            time.sleep(5)
+            try:
+
+                bot.stop_polling()
+            except:
+                pass
+
+            time.sleep(10)
 
 # =====================================================
 # RUN
@@ -869,9 +879,7 @@ if __name__ == "__main__":
 
     )
 
-    if os.environ.get(
-        "WERKZEUG_RUN_MAIN"
-    ) != "true":
+    if not app.debug:
 
         threading.Thread(
 
