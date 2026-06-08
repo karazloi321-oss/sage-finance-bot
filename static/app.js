@@ -655,20 +655,52 @@ async function loadAI(){
     }catch(error){
 
         console.log(
+
             // =====================================================
-// INIT
+// START APP
 // =====================================================
 
-window.onload = () => {
+document.addEventListener(
 
-    updateCategories();
+    "DOMContentLoaded",
 
-    loadTransactions();
+    () => {
 
-    loadStats();
+        try{
 
-    loadAI();
+            if(
+                document.getElementById("category")
+            ){
 
-    loadBusinessAnalytics();
+                updateCategories();
 
-};
+            }
+
+            loadTransactions();
+
+            loadStats();
+
+            loadAI();
+
+            if(
+                document.getElementById(
+                    "businessIncome"
+                )
+            ){
+
+                loadBusinessAnalytics();
+
+            }
+
+        }catch(error){
+
+            console.log(
+                "INIT ERROR",
+                error
+            );
+
+        }
+
+    }
+
+);
