@@ -654,22 +654,21 @@ async function loadAI(){
 
     }catch(error){
 
-        console.log(error);
-
-    }
-
-}
-
-// =====================================================
+        console.log(
+            // =====================================================
 // INIT
 // =====================================================
 
-updateCategories();
+window.onload = () => {
 
-loadTransactions();
+    updateCategories();
 
-loadStats();
+    loadTransactions();
 
-loadAI();
+    loadStats();
 
-loadBusinessAnalytics();
+    loadAI();
+
+    loadBusinessAnalytics();
+
+};
