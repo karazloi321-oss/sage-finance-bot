@@ -23,7 +23,100 @@ if(window.Telegram?.WebApp){
     }
 
 }
+// =====================================================
+// CATEGORIES
+// =====================================================
 
+const categories = {
+
+    personal: {
+
+        income: [
+
+            "💼 Зарплата",
+            "💸 Подработка",
+            "🏦 Перевод",
+            "📈 Инвестиции",
+            "📦 Другое"
+
+        ],
+
+        expense: [
+
+            "🍔 Еда",
+            "🚕 Транспорт",
+            "🏠 Дом",
+            "💊 Здоровье",
+            "🎮 Развлечения",
+            "👕 Одежда",
+            "📱 Подписки",
+            "📦 Другое"
+
+        ]
+
+    },
+
+    business: {
+
+        income: [
+
+            "🛒 Продажи",
+            "💻 Онлайн",
+            "📦 Опт",
+            "🧾 Услуги",
+            "📈 Другое"
+
+        ],
+
+        expense: [
+
+            "📦 Закупка",
+            "📢 Реклама",
+            "🏢 Аренда",
+            "👨‍💼 Зарплата",
+            "💸 Налоги",
+            "🚚 Логистика",
+            "🏦 Комиссии",
+            "📉 Другое"
+
+        ]
+
+    }
+
+};
+// =====================================================
+// UPDATE CATEGORIES
+// =====================================================
+
+function updateCategories(){
+
+    const account = document
+        .getElementById("account")
+        .value;
+
+    const type = document
+        .getElementById("type")
+        .value;
+
+    const categorySelect = document
+        .getElementById("category");
+
+    categorySelect.innerHTML = "";
+
+    categories[account][type]
+        .forEach(category => {
+
+            categorySelect.innerHTML += `
+
+            <option value="${category}">
+                ${category}
+            </option>
+
+            `;
+
+        });
+
+}
 // =====================================================
 // AUTH
 // =====================================================
@@ -203,7 +296,78 @@ async function addTransaction(){
         return;
 
     }
+// =====================================================
+// BUSINESS ANALYTICS
+// =====================================================
 
+async function loadBusinessAnalytics(){
+
+    try{
+
+        const response = await fetch(
+
+            `/transactions/${userId}`
+
+        );
+
+        const data = await response.json();
+
+        let income = 0;
+        let expense = 0;
+
+        data.forEach(item => {
+
+            if(item.account !== "business"){
+                return;
+            }
+
+            if(item.type === "income"){
+
+                income += item.amount;
+
+            }else{
+
+                expense += item.amount;
+
+            }
+
+        });
+
+        const profit = income - expense;
+
+        let margin = 0;
+
+        if(income > 0){
+
+            margin = (
+                (profit / income) * 100
+            ).toFixed(1);
+
+        }
+
+        document
+            .getElementById("businessIncome")
+            .innerHTML = `${income} ₽`;
+
+        document
+            .getElementById("businessExpense")
+            .innerHTML = `${expense} ₽`;
+
+        document
+            .getElementById("businessProfit")
+            .innerHTML = `${profit} ₽`;
+
+        document
+            .getElementById("businessMargin")
+            .innerHTML = `${margin}%`;
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+}
     try{
 
         await fetch("/add_transaction", {
@@ -500,8 +664,12 @@ async function loadAI(){
 // INIT
 // =====================================================
 
+updateCategories();
+
 loadTransactions();
 
 loadStats();
 
 loadAI();
+
+loadBusinessAnalytics();
