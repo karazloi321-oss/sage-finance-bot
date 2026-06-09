@@ -1,17 +1,4 @@
-Теперь делаем полный `style.css v20` — уже с:
 
-* inventory cards
-* улучшенным dashboard
-* плавными анимациями
-* оптимизацией под iPhone
-* красивыми карточками
-* glassmorphism UI
-* лучшей адаптацией Telegram WebApp
-* быстрым рендером
-
-Замени `style.css` полностью.
-
-```css
 *{
 margin:0;
 padding:0;
@@ -771,4 +758,4 @@ font-size:24px;
 }
 
 }
-```
+
