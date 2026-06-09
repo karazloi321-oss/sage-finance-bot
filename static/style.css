@@ -758,4 +758,59 @@ font-size:24px;
 }
 
 }
+css id="css22x"
+#inventoryList{
+margin-top:10px;
+}
 
+.history-item{
+transition:0.2s;
+}
+
+.history-item:active{
+transform:scale(0.98);
+}
+
+.input,
+.button,
+.nav-item,
+.sidebar-item,
+.menu-btn,
+.plus-btn,
+.delete-btn{
+touch-action:manipulation;
+}
+
+.button:active,
+.plus-btn:active{
+transform:scale(0.98);
+}
+
+.navbar{
+overflow-x:auto;
+gap:10px;
+padding-left:10px;
+padding-right:10px;
+}
+
+.navbar::-webkit-scrollbar{
+display:none;
+}
+
+.section{
+width:100%;
+}
+
+canvas{
+width:100% !important;
+height:auto !important;
+}
+
+.modal-content{
+max-height:92vh;
+overflow-y:auto;
+}
+
+body.modal-open{
+overflow:hidden;
+}
