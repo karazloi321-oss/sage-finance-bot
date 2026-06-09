@@ -1,0 +1,187 @@
+/* =====================================================
+MOBILE
+===================================================== */
+
+html{
+touch-action:manipulation;
+-webkit-text-size-adjust:100%;
+}
+
+body{
+overscroll-behavior:none;
+}
+
+/* =====================================================
+IPHONE SAFE AREA
+===================================================== */
+
+.container{
+padding-bottom:
+calc(
+140px + env(safe-area-inset-bottom)
+);
+}
+
+.navbar{
+padding-bottom:
+calc(
+16px + env(safe-area-inset-bottom)
+);
+}
+
+/* =====================================================
+INPUT FIX
+===================================================== */
+
+input,
+select,
+textarea{
+font-size:16px;
+}
+
+/* =====================================================
+BUTTON FIX
+===================================================== */
+
+.button,
+.plus-btn,
+.nav-item,
+.menu-btn,
+.sidebar-item,
+.delete-btn{
+touch-action:manipulation;
+user-select:none;
+}
+
+/* =====================================================
+SMALL DEVICES
+===================================================== */
+
+@media(max-width:700px){
+
+.container{
+padding:16px;
+padding-bottom:140px;
+}
+
+.logo{
+font-size:28px;
+}
+
+.balance{
+font-size:36px;
+}
+
+.cards-row{
+grid-template-columns:1fr;
+}
+
+.card{
+padding:18px;
+border-radius:26px;
+}
+
+.small-card{
+padding:18px;
+}
+
+.small-value{
+font-size:22px;
+}
+
+.section-title{
+font-size:22px;
+}
+
+.navbar{
+width:96%;
+bottom:12px;
+border-radius:28px;
+}
+
+.nav-item{
+font-size:10px;
+min-width:62px;
+}
+
+.nav-item i{
+font-size:20px;
+}
+
+.plus-btn{
+width:62px;
+height:62px;
+right:18px;
+bottom:100px;
+font-size:28px;
+}
+
+.modal-content{
+border-radius:28px 28px 0 0;
+padding:20px;
+}
+
+.input{
+padding:16px;
+border-radius:20px;
+}
+
+.button{
+padding:16px;
+border-radius:22px;
+}
+
+.history-item{
+padding:16px;
+}
+
+}
+
+/* =====================================================
+VERY SMALL DEVICES
+===================================================== */
+
+@media(max-width:380px){
+
+.logo{
+font-size:24px;
+}
+
+.balance{
+font-size:32px;
+}
+
+.small-value{
+font-size:20px;
+}
+
+.section-title{
+font-size:20px;
+}
+
+.nav-item{
+min-width:56px;
+font-size:9px;
+}
+
+.nav-item i{
+font-size:18px;
+}
+
+}
+
+/* =====================================================
+LANDSCAPE
+===================================================== */
+
+@media(orientation:landscape){
+
+.navbar{
+width:70%;
+}
+
+.container{
+max-width:1000px;
+}
+
+}
