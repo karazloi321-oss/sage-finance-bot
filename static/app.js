@@ -1,24 +1,3 @@
-### Новый `app.py` для Sage Finance V19/V20
-
-Полностью совместим с твоим текущим frontend и готов под Render.
-
-Что добавлено:
-
-* inventory system
-* товары
-* остатки
-* закупки
-* dashboard API
-* business analytics API
-* monthly analytics
-* оптимизация SQL
-* стабильность Telegram bot
-* защита от ошибок
-* подготовка под масштабирование
-
-Замени `app.py` полностью.
-
-```python
 from flask import Flask, render_template, request, jsonify
 import sqlite3
 import threading
@@ -788,4 +767,3 @@ if __name__ == "__main__":
         debug=False,
         use_reloader=False
     )
-```
