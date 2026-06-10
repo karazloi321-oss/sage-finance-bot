@@ -83,6 +83,19 @@ onclick="openSection('settings-section')"
 </div>
 
 </div>
+<div
+class="sidebar-item"
+onclick="openSection('goals-section')"
+>
+🎯 Финансовые цели
+</div>
+
+<div
+class="sidebar-item"
+onclick="openSection('debts-section')"
+>
+💳 Долги
+</div>
 
 <!-- MODAL -->
 
@@ -585,6 +598,27 @@ onclick="openSection('business-section', this)"
 
 <i class="fa-solid fa-building"></i>
 
+<div
+class="nav-item"
+onclick="openSection('goals-section', this)"
+>
+
+<i class="fa-solid fa-bullseye"></i>
+
+Цели
+
+</div>
+
+<div
+class="nav-item"
+onclick="openSection('debts-section', this)"
+>
+
+<i class="fa-solid fa-credit-card"></i>
+
+Долги
+
+</div> 
 Бизнес
 
 </div>
@@ -624,6 +658,14 @@ src="{{ url_for('static', filename='js/charts.js') }}"
 src="{{ url_for('static', filename='js/inventory.js') }}"
 ></script>
 
+<script
+src="{{ url_for('static', filename='js/goals.js') }}"
+></script>
+
+<script
+src="{{ url_for('static', filename='js/debts.js') }}"
+></script>
+  
 <script
 src="{{ url_for('static', filename='js/app.js') }}"
 ></script>
