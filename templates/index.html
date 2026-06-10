@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="
+width=device-width,
+initial-scale=1.0,
+viewport-fit=cover
+"
+/>
+
+<title>
+Sage Finance
+</title>
+
+<link
+rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}"
+/>
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<div
+class="sidebar"
+id="sidebar"
+>
+
+<div class="sidebar-title">
+
+Sage Finance
+
+</div>
+
+<div
+class="sidebar-item"
+onclick="openSection('business-section')"
+>
+
+💼 Бизнес
+
+</div>
+
+<div
+class="sidebar-item"
+onclick="openSection('goals-section')"
+>
+
+🎯 Финансовые цели
+
+</div>
+
+<div
+class="sidebar-item"
+onclick="openSection('debts-section')"
+>
+
+💳 Долги
+
+</div>
+
+<div
+class="sidebar-item"
+onclick="openSection('ai-section')"
+>
+
+🤖 AI Finance
+
+</div>
+
+</div>
+
+<!-- OVERLAY -->
+
+<div
+class="overlay"
+id="overlay"
+onclick="closeSidebar()"
+></div>
+
+<!-- MODAL -->
+
+<div
+class="modal"
+id="modal"
+onclick="outsideModalClose(event)"
+>
+
+<div
+class="modal-content"
+onclick="event.stopPropagation()"
+>
+
+<div class="section-title">
+
+Новая операция
+
+</div>
+
+<select
+class="input"
+id="account"
+onchange="updateCategories()"
+>
+
+<option value="personal">
+
+👤 Личный
+
+</option>
+
+<option value="business">
+
+💼 Бизнес
+
+</option>
+
+</select>
+
+<select
+class="input"
+id="type"
+onchange="updateCategories()"
+>
+
+<option value="income">
+
+📈 Доход
+
+</option>
+
+<option value="expense">
+
+📉 Расход
+
+</option>
+
+</select>
+
+<select
+class="input"
+id="category"
+>
+</select>
+
+<input
+class="input"
+type="number"
+id="amount"
+placeholder="Сумма"
+/>
+
+<button
+class="button"
+onclick="addTransaction()"
+>
+
+Сохранить
+
+</button>
+
+</div>
+
+</div>
+
+<!-- CONTAINER -->
+
+<div class="container">
+
+<!-- TOPBAR -->
+
+<div class="topbar">
+
+<div class="logo">
+
+Sage Finance
+
+</div>
+
+<div
+class="menu-btn"
+onclick="openSidebar()"
+>
+
+<i class="fa-solid fa-bars"></i>
+
+</div>
+
+</div>
+
+<!-- HOME -->
+
+<div
+class="section active-section"
+id="home-section"
+>
+
+<div class="balance-card">
+
+<div class="balance-title">
+
+💰 Общий баланс
+
+</div>
+
+<div
+class="balance"
+id="totalBalance"
+>
+
+0 ₽
+
+</div>
+
+</div>
+
+<div class="cards-row">
+
+<div class="small-card">
+
+<div class="small-title">
+
+👤 Личный
+
+</div>
+
+<div
+class="small-value"
+id="personalBalance"
+>
+
+0 ₽
+
+</div>
+
+</div>
+
+<div class="small-card">
+
+<div class="small-title">
+
+💼 Бизнес
+
+</div>
+
+<div
+class="small-value"
+id="businessBalance"
+>
+
+0 ₽
+
+</div>
+
+</div>
+
+</div>
+
+<div class="cards-row">
+
+<div class="small-card">
+
+<div class="small-title">
+
+📈 Доходы
+
+</div>
+
+<div
+class="small-value"
+id="incomeStat"
+>
+
+0 ₽
+
+</div>
+
+</div>
+
+<div class="small-card">
+
+<div class="small-title">
+
+📉 Расходы
+
+</div>
+
+<div
+class="small-value"
+id="expenseStat"
+>
+
+0 ₽
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ANALYTICS -->
+
+<div
+class="section"
+id="analytics-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+
+📊 Расходы
+
+</div>
+
+<canvas id="expenseChart"></canvas>
+
+</div>
+
+<div class="card">
+
+<div class="section-title">
+
+📈 Финансы
+
+</div>
+
+<canvas id="financeChart"></canvas>
+
+</div>
+
+</div>
+
+<!-- BUSINESS -->
+
+<div
+class="section"
+id="business-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+
+💼 Бизнес аналитика
+
+</div>
+
+<div class="cards-row">
+
+<div class="small-card">
+
+<div class="small-title">
+
+💰 Выручка
+
+</div>
+
+<div
+class="small-value"
+id="businessIncome"
+>
+
+0 ₽
+
+</div>
+
+</div>
+
+<div class="small-card">
+
+<div class="small-title">
+
+📉 Расходы
+
+</div>
+
+<div
+class="small-value"
+id="businessExpense"
+>
+
+0 ₽
+
+</div>
+
+</div>
+
+</div>
+
+<div class="cards-row">
+
+<div class="small-card">
+
+<div class="small-title">
+
+📈 Прибыль
+
+</div>
+
+<div
+class="small-value"
+id="businessProfit"
+>
+
+0 ₽
+
+</div>
+
+</div>
+
+<div class="small-card">
+
+<div class="small-title">
+
+🔥 Маржа
+
+</div>
+
+<div
+class="small-value"
+id="businessMargin"
+>
+
+0%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- HISTORY -->
+
+<div
+class="section"
+id="history-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+
+🕓 История
+
+</div>
+
+<div id="historyList"></div>
+
+</div>
+
+</div>
+
+<!-- GOALS -->
+
+<div
+class="section"
+id="goals-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+
+🎯 Финансовые цели
+
+</div>
+
+<input
+class="input"
+id="goalTitle"
+placeholder="Название цели"
+/>
+
+<input
+class="input"
+type="number"
+id="goalTarget"
+placeholder="Сумма цели"
+/>
+
+<button
+class="button"
+onclick="saveGoal()"
+>
+
+Создать цель
+
+</button>
+
+<div
+id="goalsList"
+style="margin-top:20px;"
+></div>
+
+</div>
+
+</div>
+
+<!-- DEBTS -->
+
+<div
+class="section"
+id="debts-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+
+💳 Долги
+
+</div>
+
+<input
+class="input"
+id="debtPerson"
+placeholder="Имя человека"
+/>
+
+<input
+class="input"
+type="number"
+id="debtAmount"
+placeholder="Сумма"
+/>
+
+<select
+class="input"
+id="debtType"
+>
+
+<option value="give">
+
+💰 Мне должны
+
+</option>
+
+<option value="i_debt">
+
+📉 Я должен
+
+</option>
+
+</select>
+
+<button
+class="button"
+onclick="saveDebt()"
+>
+
+Сохранить долг
+
+</button>
+
+<div
+id="debtsList"
+style="margin-top:20px;"
+></div>
+
+</div>
+
+</div>
+
+<!-- AI -->
+
+<div
+class="section"
+id="ai-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+
+🤖 AI Finance
+
+</div>
+
+<div
+class="ai-text"
+id="aiText"
+>
+
+Анализируем финансы...
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- NAVBAR -->
+
+<div class="navbar">
+
+<div
+class="nav-item active"
+onclick="openSection('home-section', this)"
+>
+
+<i class="fa-solid fa-house"></i>
+
+Главная
+
+</div>
+
+<div
+class="nav-item"
+onclick="openSection('analytics-section', this)"
+>
+
+<i class="fa-solid fa-chart-pie"></i>
+
+Аналитика
+
+</div>
+
+<div
+class="nav-center-btn"
+onclick="openModal()"
+>
+
+<i class="fa-solid fa-plus"></i>
+
+</div>
+
+<div
+class="nav-item"
+onclick="openSection('history-section', this)"
+>
+
+<i class="fa-solid fa-clock"></i>
+
+История
+
+</div>
+
+<div
+class="nav-item"
+onclick="openSidebar()"
+>
+
+<i class="fa-solid fa-bars"></i>
+
+Еще
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script
+src="{{ url_for('static', filename='js/goals.js') }}"
+></script>
+
+<script
+src="{{ url_for('static', filename='js/debts.js') }}"
+></script>
+
+<script
+src="{{ url_for('static', filename='app.js') }}"
+></script>
+
+</body>
+
+</html>
