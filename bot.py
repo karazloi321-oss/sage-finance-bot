@@ -542,6 +542,141 @@ def goals(user_id):
 
     return jsonify(result)
 
+
+# =====================================================
+# ADD MONEY TO GOAL
+# =====================================================
+
+@app.route(
+
+    "/add_goal_money/<int:goal_id>",
+
+    methods=["POST"]
+
+)
+def add_goal_money(goal_id):
+
+    data = request.json
+
+    amount = float(
+
+        data.get(
+            "amount",
+            0
+        )
+
+    )
+
+    if amount <= 0:
+
+        return jsonify({
+
+            "error":"invalid amount"
+
+        }), 400
+
+    conn = get_conn()
+
+    c = conn.cursor()
+
+    c.execute("""
+
+    UPDATE goals
+
+    SET saved = saved + ?
+
+    WHERE id = ?
+
+    """, (
+
+        amount,
+
+        goal_id
+
+    ))
+
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({
+
+        "status":"success"
+
+    })
+
+# =====================================================
+# DELETE DEBT
+# =====================================================
+
+@app.route(
+
+    "/delete_debt/<int:debt_id>",
+
+    methods=["DELETE"]
+
+)
+def delete_debt(debt_id):
+
+    conn = get_conn()
+
+    c = conn.cursor()
+
+    c.execute("""
+
+    DELETE FROM debts
+
+    WHERE id=?
+
+    """, (debt_id,))
+
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({
+
+        "status":"deleted"
+
+    })
+
+# =====================================================
+# DELETE GOAL
+# =====================================================
+
+@app.route(
+
+    "/delete_goal/<int:goal_id>",
+
+    methods=["DELETE"]
+
+)
+def delete_goal(goal_id):
+
+    conn = get_conn()
+
+    c = conn.cursor()
+
+    c.execute("""
+
+    DELETE FROM goals
+
+    WHERE id=?
+
+    """, (goal_id,))
+
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({
+
+        "status":"deleted"
+
+    })
+
+
+
 # =====================================================
 # ADD MONEY TO GOAL
 # =====================================================
