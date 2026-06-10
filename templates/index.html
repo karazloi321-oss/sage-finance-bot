@@ -387,6 +387,109 @@ id="history-section"
 
 </div>
 
+<!-- GOALS -->
+
+<div
+class="section"
+id="goals-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+🎯 Финансовые цели
+</div>
+
+<input
+class="input"
+id="goalTitle"
+placeholder="Название цели"
+/>
+
+<input
+class="input"
+type="number"
+id="goalTarget"
+placeholder="Сумма цели"
+/>
+
+<button
+class="button"
+onclick="saveGoal()"
+>
+
+Создать цель
+
+</button>
+
+<div
+id="goalsList"
+style="margin-top:20px;"
+></div>
+
+</div>
+
+</div>
+
+<!-- DEBTS -->
+
+<div
+class="section"
+id="debts-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+💳 Долги
+</div>
+
+<input
+class="input"
+id="debtPerson"
+placeholder="Имя человека"
+/>
+
+<input
+class="input"
+type="number"
+id="debtAmount"
+placeholder="Сумма"
+/>
+
+<select
+class="input"
+id="debtType"
+>
+
+<option value="give">
+💰 Мне должны
+</option>
+
+<option value="i_debt">
+📉 Я должен
+</option>
+
+</select>
+
+<button
+class="button"
+onclick="saveDebt()"
+>
+
+Сохранить долг
+
+</button>
+
+<div
+id="debtsList"
+style="margin-top:20px;"
+></div>
+
+</div>
+
+</div>
+
 <!-- AI -->
 
 <div
