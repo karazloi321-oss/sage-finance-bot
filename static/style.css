@@ -814,3 +814,296 @@ overflow-y:auto;
 body.modal-open{
 overflow:hidden;
 }
+
+/* =====================================================
+GOALS
+===================================================== */
+
+.goal-card{
+
+background:linear-gradient(
+135deg,
+#1c2838,
+#243247
+);
+
+padding:20px;
+
+border-radius:28px;
+
+margin-top:18px;
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.18);
+
+}
+
+.goal-top{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+gap:14px;
+
+}
+
+.goal-title{
+
+font-size:18px;
+
+font-weight:900;
+
+line-height:1.3;
+
+}
+
+.goal-sub{
+
+font-size:14px;
+
+opacity:0.72;
+
+margin-top:4px;
+
+}
+
+.goal-progress{
+
+width:100%;
+
+height:14px;
+
+background:#2a3547;
+
+border-radius:30px;
+
+overflow:hidden;
+
+margin-top:18px;
+
+}
+
+.goal-progress-fill{
+
+height:100%;
+
+border-radius:30px;
+
+background:linear-gradient(
+90deg,
+#79d279,
+#9cff9c
+);
+
+transition:0.35s ease;
+
+}
+
+.goal-footer{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-top:18px;
+
+gap:12px;
+
+}
+
+.goal-percent{
+
+font-size:18px;
+
+font-weight:900;
+
+color:#79d279;
+
+}
+
+.goal-add-btn{
+
+border:none;
+
+background:linear-gradient(
+135deg,
+#6d8ea6,
+#9bb6c9
+);
+
+padding:12px 18px;
+
+border-radius:18px;
+
+font-weight:800;
+
+color:white;
+
+cursor:pointer;
+
+font-size:14px;
+
+}
+
+/* =====================================================
+DEBTS
+===================================================== */
+
+.debt-card{
+
+background:linear-gradient(
+135deg,
+#1c2838,
+#243247
+);
+
+padding:20px;
+
+border-radius:28px;
+
+margin-top:18px;
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.18);
+
+}
+
+.debt-top{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+gap:12px;
+
+}
+
+.debt-amount{
+
+font-size:34px;
+
+font-weight:900;
+
+margin-top:18px;
+
+}
+
+/* =====================================================
+GLASS EFFECT
+===================================================== */
+
+.card,
+.small-card,
+.balance-card,
+.goal-card,
+.debt-card{
+
+backdrop-filter:blur(16px);
+
+}
+
+/* =====================================================
+SMOOTH ANIMATION
+===================================================== */
+
+.goal-card,
+.debt-card,
+.history-item,
+.small-card{
+
+animation:fadeCard 0.25s ease;
+
+}
+
+@keyframes fadeCard{
+
+from{
+
+opacity:0;
+
+transform:translateY(12px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
+
+}
+
+/* =====================================================
+IPHONE FIX
+===================================================== */
+
+input,
+select,
+button{
+
+font-size:16px;
+
+}
+
+/* =====================================================
+SCROLL FIX
+===================================================== */
+
+html,
+body{
+
+overscroll-behavior:none;
+
+}
+
+/* =====================================================
+SAFE AREA
+===================================================== */
+
+.container{
+
+padding-bottom:
+
+calc(
+140px +
+env(safe-area-inset-bottom)
+);
+
+}
+
+/* =====================================================
+MOBILE
+===================================================== */
+
+@media(max-width:700px){
+
+.goal-footer{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+}
+
+.goal-add-btn{
+
+width:100%;
+
+}
+
+.debt-amount{
+
+font-size:28px;
+
+}
+
+}
