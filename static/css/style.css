@@ -408,47 +408,179 @@ transform:scale(0.96);
 }
 
 /* =====================================================
-NAVBAR
+BOTTOM NAVBAR
 ===================================================== */
 
 .navbar{
+
 position:fixed;
-bottom:18px;
+
 left:50%;
+
+bottom:14px;
+
 transform:translateX(-50%);
+
 width:94%;
-background:#182232;
-border-radius:32px;
+
+max-width:760px;
+
+height:82px;
+
+background:rgba(24,34,50,0.96);
+
+border-radius:34px;
+
 display:flex;
+
 justify-content:space-around;
-padding:16px 0;
-z-index:100;
-backdrop-filter:blur(12px);
-overflow-x:auto;
+
+align-items:center;
+
+padding:0 10px;
+
+z-index:1000;
+
+backdrop-filter:blur(18px);
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.28);
+
 }
 
-.navbar::-webkit-scrollbar{
-display:none;
-}
+/* =====================================================
+NAV ITEM
+===================================================== */
 
 .nav-item{
+
 display:flex;
+
 flex-direction:column;
+
 align-items:center;
+
+justify-content:center;
+
 font-size:11px;
-opacity:0.55;
+
+font-weight:700;
+
+opacity:0.58;
+
 cursor:pointer;
-min-width:70px;
+
+transition:0.2s ease;
+
+min-width:64px;
+
+height:100%;
+
 }
 
 .nav-item i{
+
 font-size:22px;
-margin-bottom:6px;
+
+margin-bottom:5px;
+
 }
 
 .nav-item.active{
+
 opacity:1;
+
 color:#9bb6c9;
+
+transform:translateY(-2px);
+
+}
+
+/* =====================================================
+CENTER BUTTON
+===================================================== */
+
+.nav-center-btn{
+
+width:68px;
+
+height:68px;
+
+border-radius:24px;
+
+background:linear-gradient(
+135deg,
+#6d8ea6,
+#9bb6c9
+);
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+font-size:28px;
+
+color:white;
+
+margin-top:-34px;
+
+box-shadow:
+0 10px 30px rgba(0,0,0,0.28);
+
+cursor:pointer;
+
+flex-shrink:0;
+
+}
+
+.nav-center-btn i{
+
+pointer-events:none;
+
+}
+
+/* =====================================================
+MOBILE
+===================================================== */
+
+@media(max-width:700px){
+
+.navbar{
+
+height:78px;
+
+border-radius:30px;
+
+}
+
+.nav-item{
+
+font-size:9px;
+
+min-width:58px;
+
+}
+
+.nav-item i{
+
+font-size:20px;
+
+}
+
+.nav-center-btn{
+
+width:62px;
+
+height:62px;
+
+font-size:24px;
+
+margin-top:-30px;
+
+}
+
 }
 
 /* =====================================================
