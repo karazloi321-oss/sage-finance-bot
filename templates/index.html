@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+/>
+
+<title>Sage Finance</title>
+
+<link
+rel="stylesheet"
+href="{{ url_for('static', filename='style.css') }}"
+/>
+
+<link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+{% include 'components/sidebar.html' %}
+
+<!-- MODAL -->
+
+{% include 'components/modal.html' %}
+
+<!-- MAIN CONTENT -->
+
+<div class="container">
+
+{% include 'components/topbar.html' %}
+
+<!-- HOME -->
+
+{% include 'pages/home.html' %}
+
+<!-- ANALYTICS -->
+
+{% include 'pages/analytics.html' %}
+
+<!-- BUSINESS -->
+
+{% include 'pages/business.html' %}
+
+<!-- WAREHOUSE -->
+
+{% include 'pages/warehouse.html' %}
+
+<!-- GOALS -->
+
+{% include 'pages/goals.html' %}
+
+<!-- DEBTS -->
+
+{% include 'pages/debts.html' %}
+
+<!-- AI -->
+
+{% include 'pages/ai.html' %}
+
+</div>
+
+<!-- NAVBAR -->
+
+{% include 'components/navbar.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script
+src="{{ url_for('static', filename='js/navigation.js') }}"
+></script>
+
+<script
+src="{{ url_for('static', filename='js/transactions.js') }}"
+></script>
+
+<script
+src="{{ url_for('static', filename='js/analytics.js') }}"
+></script>
+
+<script
+src="{{ url_for('static', filename='js/business.js') }}"
+></script>
+
+<script
+src="{{ url_for('static', filename='js/goals.js') }}"
+></script>
+
+<script
+src="{{ url_for('static', filename='js/debts.js') }}"
+></script>
+
+<script
+src="{{ url_for('static', filename='js/ai.js') }}"
+></script>
+
+</body>
+
+</html>
