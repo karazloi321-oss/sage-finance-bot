@@ -293,7 +293,7 @@ id="analytics-section"
 
 <div class="section-title">
 
-📊 Расходы
+📊 Расходы по категориям
 
 </div>
 
@@ -305,7 +305,7 @@ id="analytics-section"
 
 <div class="section-title">
 
-📈 Финансы
+📈 Доходы и расходы
 
 </div>
 
@@ -418,27 +418,6 @@ id="businessMargin"
 
 </div>
 
-<!-- HISTORY -->
-
-<div
-class="section"
-id="history-section"
->
-
-<div class="card">
-
-<div class="section-title">
-
-🕓 История
-
-</div>
-
-<div id="historyList"></div>
-
-</div>
-
-</div>
-
 <!-- GOALS -->
 
 <div
@@ -503,7 +482,7 @@ id="debts-section"
 <input
 class="input"
 id="debtPerson"
-placeholder="Имя человека"
+placeholder="Имя"
 />
 
 <input
@@ -518,7 +497,7 @@ class="input"
 id="debtType"
 >
 
-<option value="give">
+<option value="owe_me">
 
 💰 Мне должны
 
@@ -537,7 +516,7 @@ class="button"
 onclick="saveDebt()"
 >
 
-Сохранить долг
+Сохранить
 
 </button>
 
@@ -557,7 +536,7 @@ class="section"
 id="ai-section"
 >
 
-<div class="card">
+<div class="card ai-card">
 
 <div class="section-title">
 
@@ -577,6 +556,16 @@ id="aiText"
 </div>
 
 </div>
+
+</div>
+<!-- CENTRAL ADD BUTTON -->
+
+<div
+class="nav-center-btn"
+onclick="openModal()"
+>
+
++
 
 </div>
 
@@ -602,38 +591,29 @@ onclick="openSection('analytics-section', this)"
 
 <i class="fa-solid fa-chart-pie"></i>
 
-Аналитика
-
-</div>
-
-<div
-class="nav-center-btn"
-onclick="openModal()"
->
-
-<i class="fa-solid fa-plus"></i>
+Статистика
 
 </div>
 
 <div
 class="nav-item"
-onclick="openSection('history-section', this)"
+onclick="openSection('business-section', this)"
 >
 
-<i class="fa-solid fa-clock"></i>
+<i class="fa-solid fa-building"></i>
 
-История
+Бизнес
 
 </div>
 
 <div
 class="nav-item"
-onclick="openSidebar()"
+onclick="openSection('debts-section', this)"
 >
 
-<i class="fa-solid fa-bars"></i>
+<i class="fa-solid fa-wallet"></i>
 
-Еще
+Долги
 
 </div>
 
@@ -642,15 +622,15 @@ onclick="openSidebar()"
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script
+src="{{ url_for('static', filename='app.js') }}"
+></script>
+
+<script
 src="{{ url_for('static', filename='js/goals.js') }}"
 ></script>
 
 <script
 src="{{ url_for('static', filename='js/debts.js') }}"
-></script>
-
-<script
-src="{{ url_for('static', filename='app.js') }}"
 ></script>
 
 </body>
