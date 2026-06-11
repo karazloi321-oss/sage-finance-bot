@@ -8,11 +8,7 @@
 
 <meta
 name="viewport"
-content="
-width=device-width,
-initial-scale=1.0,
-viewport-fit=cover
-"
+content="width=device-width, initial-scale=1.0"
 />
 
 <title>
@@ -43,50 +39,31 @@ id="sidebar"
 >
 
 <div class="sidebar-title">
-
 Sage Finance
-
-</div>
-
-<div
-class="sidebar-item"
-onclick="openSection('business-section')"
->
-
-💼 Бизнес
-
 </div>
 
 <div
 class="sidebar-item"
 onclick="openSection('goals-section')"
 >
-
-🎯 Финансовые цели
-
+🎯 Цели
 </div>
 
 <div
 class="sidebar-item"
 onclick="openSection('debts-section')"
 >
-
 💳 Долги
-
 </div>
 
 <div
 class="sidebar-item"
 onclick="openSection('ai-section')"
 >
-
 🤖 AI Finance
-
 </div>
 
 </div>
-
-<!-- OVERLAY -->
 
 <div
 class="overlay"
@@ -120,15 +97,11 @@ onchange="updateCategories()"
 >
 
 <option value="personal">
-
 👤 Личный
-
 </option>
 
 <option value="business">
-
 💼 Бизнес
-
 </option>
 
 </select>
@@ -140,15 +113,11 @@ onchange="updateCategories()"
 >
 
 <option value="income">
-
 📈 Доход
-
 </option>
 
 <option value="expense">
-
 📉 Расход
-
 </option>
 
 </select>
@@ -156,8 +125,7 @@ onchange="updateCategories()"
 <select
 class="input"
 id="category"
->
-</select>
+></select>
 
 <input
 class="input"
@@ -214,18 +182,14 @@ id="home-section"
 <div class="balance-card">
 
 <div class="balance-title">
-
 💰 Общий баланс
-
 </div>
 
 <div
 class="balance"
 id="totalBalance"
 >
-
 0 ₽
-
 </div>
 
 </div>
@@ -235,18 +199,14 @@ id="totalBalance"
 <div class="small-card">
 
 <div class="small-title">
-
 👤 Личный
-
 </div>
 
 <div
 class="small-value"
 id="personalBalance"
 >
-
 0 ₽
-
 </div>
 
 </div>
@@ -254,18 +214,14 @@ id="personalBalance"
 <div class="small-card">
 
 <div class="small-title">
-
 💼 Бизнес
-
 </div>
 
 <div
 class="small-value"
 id="businessBalance"
 >
-
 0 ₽
-
 </div>
 
 </div>
@@ -277,18 +233,14 @@ id="businessBalance"
 <div class="small-card">
 
 <div class="small-title">
-
 📈 Доходы
-
 </div>
 
 <div
 class="small-value"
 id="incomeStat"
 >
-
 0 ₽
-
 </div>
 
 </div>
@@ -296,19 +248,33 @@ id="incomeStat"
 <div class="small-card">
 
 <div class="small-title">
-
 📉 Расходы
-
 </div>
 
 <div
 class="small-value"
 id="expenseStat"
 >
-
 0 ₽
+</div>
 
 </div>
+
+</div>
+
+<!-- LAST OPERATIONS -->
+
+<div class="card">
+
+<div class="section-title">
+
+🕓 Последние операции
+
+</div>
+
+<div id="lastTransactions">
+
+Загрузка...
 
 </div>
 
