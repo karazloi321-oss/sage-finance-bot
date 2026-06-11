@@ -1,0 +1,74 @@
+<div
+class="modal"
+id="modal"
+onclick="outsideModalClose(event)"
+>
+
+<div
+class="modal-content"
+onclick="event.stopPropagation()"
+>
+
+<div class="section-title">
+
+Новая операция
+
+</div>
+
+<select
+class="input"
+id="account"
+onchange="updateCategories()"
+>
+
+<option value="personal">
+👤 Личный
+</option>
+
+<option value="business">
+💼 Бизнес
+</option>
+
+</select>
+
+<select
+class="input"
+id="type"
+onchange="updateCategories()"
+>
+
+<option value="income">
+📈 Доход
+</option>
+
+<option value="expense">
+📉 Расход
+</option>
+
+</select>
+
+<select
+class="input"
+id="category"
+>
+</select>
+
+<input
+class="input"
+type="number"
+id="amount"
+placeholder="Сумма"
+/>
+
+<button
+class="button"
+onclick="addTransaction()"
+>
+
+Сохранить
+
+</button>
+
+</div>
+
+</div>
