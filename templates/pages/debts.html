@@ -1,0 +1,64 @@
+<div
+class="section"
+id="debts-section"
+>
+
+<div class="card">
+
+<div class="section-title">
+
+💳 Долги
+
+</div>
+
+<input
+class="input"
+id="debtPerson"
+placeholder="Имя"
+/>
+
+<input
+class="input"
+type="number"
+id="debtAmount"
+placeholder="Сумма"
+/>
+
+<select
+class="input"
+id="debtType"
+>
+
+<option value="owe_me">
+
+💰 Мне должны
+
+</option>
+
+<option value="i_debt">
+
+📉 Я должен
+
+</option>
+
+</select>
+
+<button
+class="button"
+onclick="saveDebt()"
+>
+
+Сохранить
+
+</button>
+
+<div
+id="debtsList"
+style="margin-top:20px;"
+>
+
+</div>
+
+</div>
+
+</div>
