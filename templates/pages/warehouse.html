@@ -3,26 +3,100 @@ class="section"
 id="warehouse-section"
 >
 
-<div class="card">
+    <div class="card">
 
-<div class="section-title">
+        <div class="section-title">
+            📦 Склад
+        </div>
 
-📦 Склад
+        <div
+        style="
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:10px;
+        margin-top:15px;
+        "
+        >
 
-</div>
+            <div class="stat-card">
 
-<div
-style="
-text-align:center;
-padding:40px 0;
-opacity:.7;
-"
->
+                <div id="warehouse-products">
+                    0
+                </div>
 
-Склад появится в V27
+                <small>
+                    Товаров
+                </small>
 
-</div>
+            </div>
 
-</div>
+            <div class="stat-card">
+
+                <div id="warehouse-stock">
+                    0 ₽
+                </div>
+
+                <small>
+                    Остаток
+                </small>
+
+            </div>
+
+            <div class="stat-card">
+
+                <div id="warehouse-profit">
+                    0 ₽
+                </div>
+
+                <small>
+                    Прибыль
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <input
+
+        id="warehouse-search"
+
+        type="text"
+
+        placeholder="Поиск товара..."
+
+        style="
+        width:100%;
+        padding:12px;
+        border:none;
+        border-radius:12px;
+        margin-bottom:12px;
+        "
+
+        />
+
+        <button
+
+        onclick="openAddProduct()"
+
+        class="action-btn"
+
+        style="width:100%;"
+
+        >
+
+            ➕ Добавить товар
+
+        </button>
+
+    </div>
+
+    <div
+    id="warehouse-list"
+    >
+    </div>
 
 </div>
