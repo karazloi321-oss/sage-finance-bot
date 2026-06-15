@@ -1,0 +1,248 @@
+from flask import Blueprint, request, jsonify
+import sqlite3
+from datetime import datetime
+
+warehouse_bp = Blueprint(
+    "warehouse",
+    __name__
+)
+
+DB_NAME = "finance.db"
+
+
+def get_conn():
+
+    conn = sqlite3.connect(
+        DB_NAME,
+        check_same_thread=False
+    )
+
+    conn.row_factory = sqlite3.Row
+
+    return conn
+
+
+# ====================================
+# GET PRODUCTS
+# ====================================
+
+@warehouse_bp.route(
+    "/api/products",
+    methods=["GET"]
+)
+def get_products():
+
+    conn = get_conn()
+
+    products = conn.execute(
+        """
+        SELECT *
+        FROM products
+        ORDER BY id DESC
+        """
+    ).fetchall()
+
+    conn.close()
+
+    result = []
+
+    for p in products:
+
+        result.append({
+
+            "id": p["id"],
+
+            "name": p["name"],
+
+            "category": p["category"],
+
+            "quantity": p["quantity"],
+
+            "buy_price": p["buy_price"],
+
+            "sell_price": p["sell_price"],
+
+            "barcode": p["barcode"],
+
+            "created_at": p["created_at"]
+
+        })
+
+    return jsonify(result)
+
+
+# ====================================
+# ADD PRODUCT
+# ====================================
+
+@warehouse_bp.route(
+    "/api/products",
+    methods=["POST"]
+)
+def add_product():
+
+    data = request.json
+
+    name = data.get(
+        "name",
+        ""
+    )
+
+    category = data.get(
+        "category",
+        "Другое"
+    )
+
+    quantity = float(
+        data.get(
+            "quantity",
+            0
+        )
+    )
+
+    buy_price = float(
+        data.get(
+            "buy_price",
+            0
+        )
+    )
+
+    sell_price = float(
+        data.get(
+            "sell_price",
+            0
+        )
+    )
+
+    barcode = data.get(
+        "barcode",
+        ""
+    )
+
+    conn = get_conn()
+
+    conn.execute(
+        """
+        INSERT INTO products
+        (
+            name,
+            category,
+            quantity,
+            buy_price,
+            sell_price,
+            barcode,
+            created_at
+        )
+        VALUES
+        (?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            name,
+            category,
+            quantity,
+            buy_price,
+            sell_price,
+            barcode,
+            datetime.now().strftime(
+                "%Y-%m-%d %H:%M"
+            )
+        )
+    )
+
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({
+        "success": True
+    })
+
+
+# ====================================
+# DELETE PRODUCT
+# ====================================
+
+@warehouse_bp.route(
+    "/api/products/<int:product_id>",
+    methods=["DELETE"]
+)
+def delete_product(product_id):
+
+    conn = get_conn()
+
+    conn.execute(
+        """
+        DELETE FROM products
+        WHERE id = ?
+        """,
+        (product_id,)
+    )
+
+    conn.commit()
+
+    conn.close()
+
+    return jsonify({
+        "success": True
+    })
+
+
+# ====================================
+# STATS
+# ====================================
+
+@warehouse_bp.route(
+    "/api/warehouse/stats",
+    methods=["GET"]
+)
+def warehouse_stats():
+
+    conn = get_conn()
+
+    products = conn.execute(
+        """
+        SELECT *
+        FROM products
+        """
+    ).fetchall()
+
+    conn.close()
+
+    total_products = len(products)
+
+    stock_value = 0
+
+    profit_value = 0
+
+    for p in products:
+
+        qty = float(
+            p["quantity"] or 0
+        )
+
+        buy_price = float(
+            p["buy_price"] or 0
+        )
+
+        sell_price = float(
+            p["sell_price"] or 0
+        )
+
+        stock_value += qty * buy_price
+
+        profit_value += qty * (
+            sell_price - buy_price
+        )
+
+    return jsonify({
+
+        "total_products":
+        total_products,
+
+        "stock_value":
+        round(stock_value, 2),
+
+        "profit_value":
+        round(profit_value, 2)
+
+    })
