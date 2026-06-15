@@ -4,6 +4,13 @@ function openModal(){
         .getElementById("modal")
         .classList.add("show");
 
+    if(
+        typeof loadProductsToSelect
+        === "function"
+    ){
+        loadProductsToSelect();
+    }
+
 }
 
 function closeModal(){
