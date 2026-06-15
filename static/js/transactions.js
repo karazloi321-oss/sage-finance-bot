@@ -266,6 +266,36 @@ async function loadProductsToSelect(){
 
 }
 
+function autoFillProduct(){
+
+    const select =
+        document.getElementById("productSelect");
+
+    const qty =
+        document.getElementById("productQty");
+
+    const amount =
+        document.getElementById("amount");
+
+    const selectedId =
+        select.value;
+
+    if(!selectedId) return;
+
+    const product =
+        warehouseProducts?.find(
+            p => p.id == selectedId
+        );
+
+    if(!product) return;
+
+    qty.value = 1;
+
+    amount.value =
+        product.sell_price || 0;
+
+}
+
     closeModal();
 
     loadTransactions();
