@@ -15,6 +15,7 @@ from routes.transactions import transactions_bp
 from routes.goals import goals_bp
 from routes.debts import debts_bp
 from routes.ai import ai_bp
+from routes.warehouse import warehouse_bp
 
 # =====================================================
 # CONFIG
@@ -161,6 +162,31 @@ def init_db():
 
     """)
 
+    # PRODUCTS
+
+c.execute("""
+
+CREATE TABLE IF NOT EXISTS products (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    name TEXT,
+
+    category TEXT,
+
+    quantity REAL DEFAULT 0,
+
+    buy_price REAL DEFAULT 0,
+
+    sell_price REAL DEFAULT 0,
+
+    barcode TEXT,
+
+    created_at TEXT
+
+)
+
+""")
     conn.commit()
 
     conn.close()
@@ -186,7 +212,9 @@ app.register_blueprint(
 app.register_blueprint(
     ai_bp
 )
-
+app.register_blueprint(
+    warehouse_bp
+)
 # =====================================================
 # HOME
 # =====================================================
