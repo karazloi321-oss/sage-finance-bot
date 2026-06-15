@@ -142,74 +142,101 @@ function updateCategories(){
 // ADD TRANSACTION
 // =====================================================
 
-async function addTransaction(){
+@transactions_bp.route(
+    "/add_transaction",
+    methods=["POST"]
+)
+def add_transaction():
 
-    const amount = parseFloat(
+    data = request.json
 
-        document
-        .getElementById("amount")
-        .value
+    user_id = str(data.get("user_id"))
 
-    );
+    account = data.get("account")
 
-    if(
-        !amount ||
-        amount <= 0
-    ){
+    t_type = data.get("type")
 
-        alert(
-            "Введите сумму"
-        );
+    amount = float(data.get("amount", 0))
 
-        return;
+    category = data.get("category", "Другое")
 
-    }
+    # ➕ НОВОЕ: товар из склада (опционально)
+    product_id = data.get("product_id")
+    quantity = data.get("quantity")
 
-    await fetch(
+    if amount <= 0:
+        return jsonify({"error": "invalid amount"}), 400
 
-        "/add_transaction",
+    conn = get_conn()
+    c = conn.cursor()
 
-        {
+    # 1. сохраняем транзакцию
+    c.execute("""
+        INSERT INTO transactions
+        (
+            user_id,
+            account,
+            type,
+            amount,
+            category,
+            created_at,
+            timestamp
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (
+        user_id,
+        account,
+        t_type,
+        amount,
+        category,
+        datetime.now().strftime("%d.%m.%Y %H:%M"),
+        time.time()
+    ))
 
-            method:"POST",
+    # 2. ➕ ЕСЛИ ЭТО ПРОДАЖА ТОВАРА — списываем склад
+    if account == "business" and t_type == "income" and product_id and quantity:
 
-            headers:{
+        c.execute("""
+            SELECT quantity, buy_price, sell_price
+            FROM products
+            WHERE id=?
+        """, (product_id,))
 
-                "Content-Type":
-                "application/json"
+        product = c.fetchone()
 
-            },
+        if product:
 
-            body:JSON.stringify({
+            new_qty = float(product["quantity"]) - float(quantity)
 
-                user_id:userId,
+            if new_qty < 0:
+                new_qty = 0
 
-                account:
-                document.getElementById(
-                    "account"
-                ).value,
+            c.execute("""
+                UPDATE products
+                SET quantity=?
+                WHERE id=?
+            """, (new_qty, product_id))
 
-                type:
-                document.getElementById(
-                    "type"
-                ).value,
+            # ➕ лог движения (если есть таблица)
+            try:
+                c.execute("""
+                    INSERT INTO stock_movements
+                    (product_id, movement_type, quantity, comment, created_at)
+                    VALUES (?, ?, ?, ?, ?)
+                """, (
+                    product_id,
+                    "sale",
+                    quantity,
+                    "Продажа через бизнес",
+                    datetime.now().strftime("%d.%m.%Y %H:%M")
+                ))
+            except:
+                pass
 
-                amount:amount,
+    conn.commit()
+    conn.close()
 
-                category:
-                document.getElementById(
-                    "category"
-                ).value
-
-            })
-
-        }
-
-    );
-
-    document
-        .getElementById("amount")
-        .value = "";
+    return jsonify({"status": "success"})
 
     closeModal();
 
