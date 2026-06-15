@@ -240,26 +240,35 @@ def add_transaction():
 
 async function loadProductsToSelect(){
 
-    const res =
-        await fetch("/api/products");
-
-    const data =
-        await res.json();
-
     const select =
-        document.getElementById("productSelect");
+        document.getElementById(
+            "productSelect"
+        );
 
     if(!select) return;
+
+    const res =
+        await fetch(
+            "/api/products"
+        );
+
+    const products =
+        await res.json();
 
     select.innerHTML =
         `<option value="">📦 Без товара</option>`;
 
-    data.forEach(p => {
+    products.forEach(product => {
 
         select.innerHTML += `
-            <option value="${p.id}">
-                ${p.name} (остаток: ${p.quantity})
-            </option>
+
+        <option value="${product.id}">
+
+            ${product.name}
+            (${product.quantity})
+
+        </option>
+
         `;
 
     });
