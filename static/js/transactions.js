@@ -238,6 +238,34 @@ def add_transaction():
 
     return jsonify({"status": "success"})
 
+async function loadProductsToSelect(){
+
+    const res =
+        await fetch("/api/products");
+
+    const data =
+        await res.json();
+
+    const select =
+        document.getElementById("productSelect");
+
+    if(!select) return;
+
+    select.innerHTML =
+        `<option value="">📦 Без товара</option>`;
+
+    data.forEach(p => {
+
+        select.innerHTML += `
+            <option value="${p.id}">
+                ${p.name} (остаток: ${p.quantity})
+            </option>
+        `;
+
+    });
+
+}
+
     closeModal();
 
     loadTransactions();
