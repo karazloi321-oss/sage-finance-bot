@@ -8,20 +8,32 @@ async function loadWarehouseStats() {
 
     const data = await res.json();
 
-    document.getElementById(
-        "warehouse-products"
-    ).innerText =
-    data.total_products;
+    const productsEl =
+        document.getElementById(
+            "warehouse-products"
+        );
 
-    document.getElementById(
-        "warehouse-stock"
-    ).innerText =
-    data.stock_value.toFixed(2);
+    const stockEl =
+        document.getElementById(
+            "warehouse-stock"
+        );
 
-    document.getElementById(
-        "warehouse-profit"
-    ).innerText =
-    data.profit_value.toFixed(2);
+    const profitEl =
+        document.getElementById(
+            "warehouse-profit"
+        );
+
+    if (productsEl)
+        productsEl.innerText =
+            data.total_products;
+
+    if (stockEl)
+        stockEl.innerText =
+            data.stock_value.toFixed(2);
+
+    if (profitEl)
+        profitEl.innerText =
+            data.profit_value.toFixed(2);
 
 }
 
@@ -32,7 +44,7 @@ async function loadProducts() {
     );
 
     warehouseProducts =
-    await res.json();
+        await res.json();
 
     renderProducts();
 
@@ -40,40 +52,61 @@ async function loadProducts() {
 
 function renderProducts() {
 
-    const list = document.getElementById(
-        "warehouse-list"
-    );
+    const list =
+        document.getElementById(
+            "warehouse-list"
+        );
+
+    if (!list) return;
+
+    const searchInput =
+        document.getElementById(
+            "warehouse-search"
+        );
 
     const search =
-    document.getElementById(
-        "warehouse-search"
-    ).value.toLowerCase();
+        searchInput
+            ? searchInput.value.toLowerCase()
+            : "";
 
     const filtered =
-    warehouseProducts.filter(p =>
-        p.name.toLowerCase().includes(search)
-    );
+        warehouseProducts.filter(
+            p =>
+                (p.name || "")
+                    .toLowerCase()
+                    .includes(search)
+        );
 
     list.innerHTML = "";
 
     filtered.forEach(product => {
 
         const margin =
-        product.buy_price > 0
-        ?
-        (
+            product.buy_price > 0
+                ? (
+                    (
+                        product.sell_price -
+                        product.buy_price
+                    ) /
+                    product.buy_price
+                ) * 100
+                : 0;
+
+        const stockValue =
+            product.quantity *
+            product.buy_price;
+
+        const expectedProfit =
+            product.quantity *
             (
                 product.sell_price -
                 product.buy_price
-            )
-            /
-            product.buy_price
-        ) * 100
-        :
-        0;
+            );
 
         const card =
-        document.createElement("div");
+            document.createElement(
+                "div"
+            );
 
         card.className = "card";
 
@@ -83,20 +116,20 @@ function renderProducts() {
             style="
             display:flex;
             justify-content:space-between;
-            align-items:center;
+            align-items:flex-start;
             "
             >
 
                 <div>
 
                     <b>
-                    ${product.name}
+                        ${product.name}
                     </b>
 
                     <br>
 
                     <small>
-                    ${product.category}
+                        ${product.category}
                     </small>
 
                 </div>
@@ -111,7 +144,8 @@ function renderProducts() {
 
             <div
             style="
-            margin-top:10px;
+            margin-top:12px;
+            line-height:1.7;
             "
             >
 
@@ -133,6 +167,45 @@ function renderProducts() {
                 Маржа:
                 ${margin.toFixed(0)}%
 
+                <br>
+
+                Остаток:
+                ${stockValue.toFixed(2)}
+
+                <br>
+
+                Потенц. прибыль:
+                ${expectedProfit.toFixed(2)}
+
+            </div>
+
+            <div
+            style="
+            display:flex;
+            gap:6px;
+            margin-top:12px;
+            flex-wrap:wrap;
+            "
+            >
+
+                <button
+                onclick="editProduct(${product.id})"
+                >
+                    ✏️ Изменить
+                </button>
+
+                <button
+                onclick="stockIn(${product.id})"
+                >
+                    ➕ Приход
+                </button>
+
+                <button
+                onclick="stockOut(${product.id})"
+                >
+                    ➖ Расход
+                </button>
+
             </div>
 
         `;
@@ -145,79 +218,82 @@ function renderProducts() {
 
 async function deleteProduct(id) {
 
-    if(
+    if (
         !confirm(
             "Удалить товар?"
         )
     ) return;
 
     await fetch(
-
         `/api/products/${id}`,
-
         {
-            method:"DELETE"
+            method: "DELETE"
         }
-
     );
 
-    loadProducts();
-
-    loadWarehouseStats();
+    await loadProducts();
+    await loadWarehouseStats();
 
 }
 
-async function openAddProduct() {
+async function editProduct(id) {
+
+    const product =
+        warehouseProducts.find(
+            p => p.id === id
+        );
+
+    if (!product) return;
 
     const name =
-    prompt("Название");
+        prompt(
+            "Название",
+            product.name
+        );
 
-    if(!name) return;
+    if (!name) return;
 
     const category =
-    prompt(
-        "Категория",
-        "Другое"
-    );
+        prompt(
+            "Категория",
+            product.category
+        );
 
     const quantity =
-    parseFloat(
-        prompt(
-            "Количество",
-            "0"
-        )
-    ) || 0;
+        parseFloat(
+            prompt(
+                "Количество",
+                product.quantity
+            )
+        ) || 0;
 
     const buy_price =
-    parseFloat(
-        prompt(
-            "Цена закупки",
-            "0"
-        )
-    ) || 0;
+        parseFloat(
+            prompt(
+                "Закупка",
+                product.buy_price
+            )
+        ) || 0;
 
     const sell_price =
-    parseFloat(
-        prompt(
-            "Цена продажи",
-            "0"
-        )
-    ) || 0;
+        parseFloat(
+            prompt(
+                "Продажа",
+                product.sell_price
+            )
+        ) || 0;
 
     await fetch(
-
-        "/api/products",
-
+        `/api/products/${id}`,
         {
+            method: "PUT",
 
-            method:"POST",
-
-            headers:{
+            headers: {
                 "Content-Type":
-                "application/json"
+                    "application/json"
             },
 
-            body:JSON.stringify({
+            body: JSON.stringify({
 
                 name,
                 category,
@@ -226,14 +302,149 @@ async function openAddProduct() {
                 sell_price
 
             })
-
         }
-
     );
 
-    loadProducts();
+    await loadProducts();
+    await loadWarehouseStats();
 
-    loadWarehouseStats();
+}
+
+async function stockIn(id) {
+
+    const qty =
+        parseFloat(
+            prompt(
+                "Количество прихода",
+                "1"
+            )
+        );
+
+    if (
+        isNaN(qty) ||
+        qty <= 0
+    ) return;
+
+    await fetch(
+        `/api/products/${id}/stock`,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+                quantity: qty
+            })
+        }
+    );
+
+    await loadProducts();
+    await loadWarehouseStats();
+
+}
+
+async function stockOut(id) {
+
+    const qty =
+        parseFloat(
+            prompt(
+                "Количество расхода",
+                "1"
+            )
+        );
+
+    if (
+        isNaN(qty) ||
+        qty <= 0
+    ) return;
+
+    await fetch(
+        `/api/products/${id}/stock`,
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+                quantity: -qty
+            })
+        }
+    );
+
+    await loadProducts();
+    await loadWarehouseStats();
+
+}
+
+async function openAddProduct() {
+
+    const name =
+        prompt(
+            "Название"
+        );
+
+    if (!name) return;
+
+    const category =
+        prompt(
+            "Категория",
+            "Другое"
+        );
+
+    const quantity =
+        parseFloat(
+            prompt(
+                "Количество",
+                "0"
+            )
+        ) || 0;
+
+    const buy_price =
+        parseFloat(
+            prompt(
+                "Цена закупки",
+                "0"
+            )
+        ) || 0;
+
+    const sell_price =
+        parseFloat(
+            prompt(
+                "Цена продажи",
+                "0"
+            )
+        ) || 0;
+
+    await fetch(
+        "/api/products",
+        {
+            method: "POST",
+
+            headers: {
+                "Content-Type":
+                    "application/json"
+            },
+
+            body: JSON.stringify({
+
+                name,
+                category,
+                quantity,
+                buy_price,
+                sell_price
+
+            })
+        }
+    );
+
+    await loadProducts();
+    await loadWarehouseStats();
 
 }
 
@@ -242,11 +453,11 @@ document.addEventListener(
     () => {
 
         const search =
-        document.getElementById(
-            "warehouse-search"
-        );
+            document.getElementById(
+                "warehouse-search"
+            );
 
-        if(search){
+        if (search) {
 
             search.addEventListener(
                 "input",
@@ -256,7 +467,6 @@ document.addEventListener(
         }
 
         loadProducts();
-
         loadWarehouseStats();
 
     }
