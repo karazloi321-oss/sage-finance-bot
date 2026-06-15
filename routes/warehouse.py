@@ -246,3 +246,103 @@ def warehouse_stats():
         round(profit_value, 2)
 
     })
+# ====================================
+# UPDATE PRODUCT
+# ====================================
+
+@warehouse_bp.route(
+    "/api/products/<int:product_id>",
+    methods=["PUT"]
+)
+def update_product(product_id):
+
+    data = request.json
+
+    conn = get_conn()
+
+    conn.execute(
+        """
+        UPDATE products
+        SET
+            name = ?,
+            category = ?,
+            quantity = ?,
+            buy_price = ?,
+            sell_price = ?
+        WHERE id = ?
+        """,
+        (
+            data.get("name"),
+            data.get("category"),
+            data.get("quantity"),
+            data.get("buy_price"),
+            data.get("sell_price"),
+            product_id
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True
+    })
+
+
+# ====================================
+# CHANGE STOCK
+# ====================================
+
+@warehouse_bp.route(
+    "/api/products/<int:product_id>/stock",
+    methods=["POST"]
+)
+def change_stock(product_id):
+
+    data = request.json
+
+    qty = float(
+        data.get(
+            "quantity",
+            0
+        )
+    )
+
+    conn = get_conn()
+
+    product = conn.execute(
+        """
+        SELECT quantity
+        FROM products
+        WHERE id = ?
+        """,
+        (product_id,)
+    ).fetchone()
+
+    current_qty = float(
+        product["quantity"]
+    )
+
+    new_qty = current_qty + qty
+
+    if new_qty < 0:
+        new_qty = 0
+
+    conn.execute(
+        """
+        UPDATE products
+        SET quantity = ?
+        WHERE id = ?
+        """,
+        (
+            new_qty,
+            product_id
+        )
+    )
+
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "success": True
+    })
