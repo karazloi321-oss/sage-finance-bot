@@ -11,16 +11,13 @@ if(window.Telegram?.WebApp){
     Telegram.WebApp.expand();
 
     if(
-        Telegram.WebApp
-        .initDataUnsafe?.user
+        Telegram.WebApp.initDataUnsafe?.user
     ){
 
         userId = String(
-
             Telegram.WebApp
             .initDataUnsafe
             .user.id
-
         );
 
     }
@@ -127,11 +124,9 @@ function updateCategories(){
     ].forEach(item => {
 
         category.innerHTML += `
-
-        <option value="${item}">
-            ${item}
-        </option>
-
+            <option value="${item}">
+                ${item}
+            </option>
         `;
 
     });
@@ -139,21 +134,179 @@ function updateCategories(){
 }
 
 // =====================================================
+// PRODUCTS SELECT
+// =====================================================
+
+async function loadProductsToSelect(){
+
+    const select =
+        document.getElementById(
+            "productSelect"
+        );
+
+    if(!select) return;
+
+    try{
+
+        const res =
+            await fetch(
+                "/api/products"
+            );
+
+        const products =
+            await res.json();
+
+        select.innerHTML =
+            `<option value="">📦 Без товара</option>`;
+
+        products.forEach(product => {
+
+            select.innerHTML += `
+                <option value="${product.id}">
+                    ${product.name}
+                    (${product.quantity})
+                </option>
+            `;
+
+        });
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+}
+
+// =====================================================
 // ADD TRANSACTION
 // =====================================================
 
+async function addTransaction(){
 
+    const amount = parseFloat(
+        document
+        .getElementById(
+            "amount"
+        )
+        .value
+    );
 
-    closeModal();
+    if(
+        !amount ||
+        amount <= 0
+    ){
 
-    loadTransactions();
+        alert(
+            "Введите сумму"
+        );
 
-    loadStats();
+        return;
 
-    loadBusinessAnalytics();
+    }
 
-    loadAI();
+    try{
 
-    loadCharts();
+        await fetch(
+
+            "/add_transaction",
+
+            {
+
+                method:"POST",
+
+                headers:{
+
+                    "Content-Type":
+                    "application/json"
+
+                },
+
+                body:JSON.stringify({
+
+                    user_id:userId,
+
+                    account:
+                    document.getElementById(
+                        "account"
+                    ).value,
+
+                    type:
+                    document.getElementById(
+                        "type"
+                    ).value,
+
+                    amount:amount,
+
+                    category:
+                    document.getElementById(
+                        "category"
+                    ).value,
+
+                    product_id:
+                    document.getElementById(
+                        "productSelect"
+                    )?.value || null,
+
+                    quantity:
+                    parseFloat(
+
+                        document.getElementById(
+                            "productQty"
+                        )?.value
+
+                    ) || null
+
+                })
+
+            }
+
+        );
+
+        document
+            .getElementById(
+                "amount"
+            )
+            .value = "";
+
+        if(
+            document.getElementById(
+                "productQty"
+            )
+        ){
+
+            document.getElementById(
+                "productQty"
+            ).value = 1;
+
+        }
+
+        closeModal();
+
+        loadTransactions?.();
+
+        loadStats?.();
+
+        loadBusinessAnalytics?.();
+
+        loadCharts?.();
+
+        loadAI?.();
+
+        loadProducts?.();
+
+        loadWarehouseStats?.();
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+        alert(
+            "Ошибка сохранения"
+        );
+
+    }
 
 }
