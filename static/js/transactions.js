@@ -137,46 +137,7 @@ function updateCategories(){
 // PRODUCTS SELECT
 // =====================================================
 
-async function loadProductsToSelect(){
 
-    const select =
-        document.getElementById(
-            "productSelect"
-        );
-
-    if(!select) return;
-
-    try{
-
-        const res =
-            await fetch(
-                "/api/products"
-            );
-
-        const products =
-            await res.json();
-
-        select.innerHTML =
-            `<option value="">📦 Без товара</option>`;
-
-        products.forEach(product => {
-
-            select.innerHTML += `
-                <option value="${product.id}">
-                    ${product.name}
-                    (${product.quantity})
-                </option>
-            `;
-
-        });
-
-    }catch(error){
-
-        console.log(error);
-
-    }
-
-}
 
 // =====================================================
 // ADD TRANSACTION
