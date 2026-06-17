@@ -162,50 +162,63 @@ line-height:1.5;
 >
 
 📦 ${product.quantity}
-
 •
 Закупка ${product.buy_price}
-
 •
 Продажа ${product.sell_price}
-
 •
 Маржа ${margin.toFixed(0)}%
 
 </div>
 
+<div
+style="
+display:flex;
+gap:6px;
+margin-top:12px;
+flex-wrap:wrap;
+"
+>
+
+    <button
+    class="button"
+    style="
+    width:auto;
+    padding:10px 14px;
+    margin-top:0;
+    "
+    onclick="editProduct(${product.id})"
+    >
+        ✏️ Изменить
+    </button>
+
+    <button
+    class="button"
+    style="
+    width:auto;
+    padding:10px 14px;
+    margin-top:0;
+    "
+    onclick="stockIn(${product.id})"
+    >
+        ➕ Приход
+    </button>
+
+    <button
+    class="button"
+    style="
+    width:auto;
+    padding:10px 14px;
+    margin-top:0;
+    "
+    onclick="stockOut(${product.id})"
+    >
+        ➖ Расход
+    </button>
+
+</div>
+
 `;
-
-            <div
-            style="
-            display:flex;
-            gap:6px;
-            margin-top:12px;
-            flex-wrap:wrap;
-            "
-            >
-
-                <button
-                onclick="editProduct(${product.id})"
-                >
-                    ✏️ Изменить
-                </button>
-
-                <button
-                onclick="stockIn(${product.id})"
-                >
-                    ➕ Приход
-                </button>
-
-                <button
-                onclick="stockOut(${product.id})"
-                >
-                    ➖ Расход
-                </button>
-
-            </div>
-
-        `;
 
         list.appendChild(card);
 
