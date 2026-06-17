@@ -112,72 +112,69 @@ function renderProducts() {
 
         card.innerHTML = `
 
-            <div
-            style="
-            display:flex;
-            justify-content:space-between;
-            align-items:flex-start;
-            "
-            >
+<div
+style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+"
+>
 
-                <div>
+    <div>
 
-                    <b>
-                        ${product.name}
-                    </b>
+        <div
+        style="
+        font-weight:700;
+        font-size:15px;
+        "
+        >
+            ${product.name}
+        </div>
 
-                    <br>
+        <div
+        style="
+        opacity:.6;
+        font-size:12px;
+        margin-top:2px;
+        "
+        >
+            ${product.category}
+        </div>
 
-                    <small>
-                        ${product.category}
-                    </small>
+    </div>
 
-                </div>
+    <button
+    onclick="deleteProduct(${product.id})"
+    class="delete-btn"
+    >
+        🗑
+    </button>
 
-                <button
-                onclick="deleteProduct(${product.id})"
-                >
-                    🗑
-                </button>
+</div>
 
-            </div>
+<div
+style="
+margin-top:8px;
+font-size:13px;
+opacity:.85;
+line-height:1.5;
+"
+>
 
-            <div
-            style="
-            margin-top:12px;
-            line-height:1.7;
-            "
-            >
+📦 ${product.quantity}
 
-                Количество:
-                ${product.quantity}
+•
+Закупка ${product.buy_price}
 
-                <br>
+•
+Продажа ${product.sell_price}
 
-                Закупка:
-                ${product.buy_price}
+•
+Маржа ${margin.toFixed(0)}%
 
-                <br>
+</div>
 
-                Продажа:
-                ${product.sell_price}
-
-                <br>
-
-                Маржа:
-                ${margin.toFixed(0)}%
-
-                <br>
-
-                Остаток:
-                ${stockValue.toFixed(2)}
-
-                <br>
-
-                Потенц. прибыль:
-                ${expectedProfit.toFixed(2)}
-
-            </div>
+`;
 
             <div
             style="
