@@ -37,14 +37,13 @@ margin-bottom:26px;
 }
 
 .logo{
-font-size:32px;
-font-weight:900;
-letter-spacing:-1px;
+font-size:18px;
+font-weight:800;
 }
 
 .menu-btn{
-width:62px;
-height:62px;
+width:46px;
+height:46px;
 border-radius:22px;
 background:#132033;
 display:flex;
@@ -241,7 +240,7 @@ position:fixed;
 left:16px;
 right:16px;
 bottom:18px;
-height:86px;
+height:72px;
 background:rgba(19,32,51,0.96);
 backdrop-filter:blur(14px);
 border-radius:32px;
@@ -261,8 +260,8 @@ font-size:11px;
 font-weight:700;
 opacity:0.6;
 cursor:pointer;
-width:68px;
-height:68px;
+width:52px;
+height:52px;
 transition:0.15s;
 text-align:center;
 }
@@ -440,8 +439,8 @@ font-size:44px;
 }
 
 .cards-row{
-grid-template-columns:1fr;
-gap:14px;
+grid-template-columns:1fr 1fr;
+gap:8px;
 }
 
 .small-card{
