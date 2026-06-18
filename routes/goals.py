@@ -141,13 +141,15 @@ def add_goal_money(goal_id):
 
     data = request.json
 
-    amount = float(
+    user_id = str(
+        data.get("user_id")
+    )
 
+    amount = float(
         data.get(
             "amount",
             0
         )
-
     )
 
     conn = get_conn()
@@ -161,11 +163,13 @@ def add_goal_money(goal_id):
     SET saved = saved + ?
 
     WHERE id=?
+    AND user_id=?
 
     """, (
 
         amount,
-        goal_id
+        goal_id,
+        user_id
 
     ))
 
@@ -189,6 +193,12 @@ def add_goal_money(goal_id):
 )
 def delete_goal(goal_id):
 
+    data = request.json or {}
+
+    user_id = str(
+        data.get("user_id", "")
+    )
+
     conn = get_conn()
 
     c = conn.cursor()
@@ -198,8 +208,14 @@ def delete_goal(goal_id):
     DELETE FROM goals
 
     WHERE id=?
+    AND user_id=?
 
-    """, (goal_id,))
+    """, (
+
+        goal_id,
+        user_id
+
+    ))
 
     conn.commit()
     conn.close()
