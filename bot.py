@@ -73,148 +73,88 @@ def get_conn():
 def init_db():
 
     conn = get_conn()
-
     c = conn.cursor()
 
-    # USERS
-
     c.execute("""
-
     CREATE TABLE IF NOT EXISTS users (
-
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-
         telegram_id TEXT UNIQUE,
-
         first_name TEXT,
-
         username TEXT
-
     )
-
     """)
-
-# TRANSACTIONS
-
-c.execute("""
-
-CREATE TABLE IF NOT EXISTS transactions (
-
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-    user_id TEXT,
-
-    account TEXT,
-
-    type TEXT,
-
-    amount REAL,
-
-    category TEXT,
-
-    created_at TEXT,
-
-    timestamp REAL
-
-)
-
-""")
-
-try:
 
     c.execute("""
-
-    ALTER TABLE transactions
-    ADD COLUMN user_id TEXT
-
+    CREATE TABLE IF NOT EXISTS transactions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
+        account TEXT,
+        type TEXT,
+        amount REAL,
+        category TEXT,
+        created_at TEXT,
+        timestamp REAL
+    )
     """)
-
-except:
-    pass
-
-
-# GOALS
-
-c.execute("""
-
-CREATE TABLE IF NOT EXISTS goals (
-
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-    user_id TEXT,
-
-    title TEXT,
-
-    target REAL,
-
-    saved REAL DEFAULT 0
-
-)
-
-""")
-
-# DEBTS
-
-c.execute("""
-
-CREATE TABLE IF NOT EXISTS debts (
-
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-    user_id TEXT,
-
-    person TEXT,
-
-    amount REAL,
-
-    type TEXT,
-
-    created_at TEXT
-
-)
-
-""")
-
-# PRODUCTS
-
-c.execute("""
-
-CREATE TABLE IF NOT EXISTS products (
-
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-    name TEXT,
-
-    category TEXT,
-
-    quantity REAL DEFAULT 0,
-
-    buy_price REAL DEFAULT 0,
-
-    sell_price REAL DEFAULT 0,
-
-    barcode TEXT,
-
-    created_at TEXT
-
-)
-
-""")
-
-try:
 
     c.execute("""
-
-    ALTER TABLE products
-    ADD COLUMN user_id TEXT
-
+    CREATE TABLE IF NOT EXISTS goals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
+        title TEXT,
+        target REAL,
+        saved REAL DEFAULT 0
+    )
     """)
 
-except:
-    pass
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS debts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
+        person TEXT,
+        amount REAL,
+        type TEXT,
+        created_at TEXT
+    )
+    """)
 
-conn.commit()
-conn.close()
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS products (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id TEXT,
+        name TEXT,
+        category TEXT,
+        quantity REAL DEFAULT 0,
+        buy_price REAL DEFAULT 0,
+        sell_price REAL DEFAULT 0,
+        barcode TEXT,
+        created_at TEXT
+    )
+    """)
+
+    migrations = [
+
+        ("transactions", "user_id TEXT"),
+        ("goals", "user_id TEXT"),
+        ("debts", "user_id TEXT"),
+        ("products", "user_id TEXT")
+
+    ]
+
+    for table, column in migrations:
+
+        try:
+
+            c.execute(
+                f"ALTER TABLE {table} ADD COLUMN {column}"
+            )
+
+        except:
+            pass
+
+    conn.commit()
+    conn.close()
     
 init_db()
 # =====================================================
