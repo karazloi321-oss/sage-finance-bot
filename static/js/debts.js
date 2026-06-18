@@ -99,7 +99,19 @@ async function deleteDebt(id){
             `/delete_debt/${id}`,
 
             {
-                method:"DELETE"
+
+                method:"DELETE",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body:JSON.stringify({
+
+                    user_id:userId
+
+                })
+
             }
 
         );
