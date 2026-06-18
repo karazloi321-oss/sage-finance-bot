@@ -94,9 +94,9 @@ def init_db():
 
     """)
 
-    # TRANSACTIONS
+ # TRANSACTIONS
 
-    c.execute("""
+c.execute("""
 
 CREATE TABLE IF NOT EXISTS transactions (
 
@@ -132,88 +132,88 @@ try:
 except:
     pass
 
-    # GOALS
+ # GOALS
+
+c.execute("""
+
+CREATE TABLE IF NOT EXISTS goals (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    user_id TEXT,
+
+    title TEXT,
+
+    target REAL,
+
+    saved REAL DEFAULT 0
+
+)
+
+""")
+
+# DEBTS
+
+c.execute("""
+
+CREATE TABLE IF NOT EXISTS debts (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    user_id TEXT,
+
+    person TEXT,
+
+    amount REAL,
+
+    type TEXT,
+
+    created_at TEXT
+
+)
+
+""")
+
+# PRODUCTS
+
+c.execute("""
+
+CREATE TABLE IF NOT EXISTS products (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    name TEXT,
+
+    category TEXT,
+
+    quantity REAL DEFAULT 0,
+
+    buy_price REAL DEFAULT 0,
+
+    sell_price REAL DEFAULT 0,
+
+    barcode TEXT,
+
+    created_at TEXT
+
+)
+
+""")
+
+try:
 
     c.execute("""
 
-    CREATE TABLE IF NOT EXISTS goals (
-
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        user_id TEXT,
-
-        title TEXT,
-
-        target REAL,
-
-        saved REAL DEFAULT 0
-
-    )
+    ALTER TABLE products
+    ADD COLUMN user_id TEXT
 
     """)
 
-    # DEBTS
+except:
+    pass
 
-    c.execute("""
-
-    CREATE TABLE IF NOT EXISTS debts (
-
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        user_id TEXT,
-
-        person TEXT,
-
-        amount REAL,
-
-        type TEXT,
-
-        created_at TEXT
-
-    )
-
-    """)
-
-    # PRODUCTS
-
-    c.execute("""
-
-    CREATE TABLE IF NOT EXISTS products (
-
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-        name TEXT,
-
-        category TEXT,
-
-        quantity REAL DEFAULT 0,
-
-        buy_price REAL DEFAULT 0,
-
-        sell_price REAL DEFAULT 0,
-
-        barcode TEXT,
-
-        created_at TEXT
-
-    )
-
-    """)
-
-    try:
-
-        c.execute("""
-
-        ALTER TABLE products
-        ADD COLUMN user_id TEXT
-
-        """)
-
-    except:
-        pass
-
-    conn.commit()
-    conn.close()
+conn.commit()
+conn.close()
     
 init_db()
 # =====================================================
