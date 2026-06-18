@@ -86,7 +86,6 @@ def init_db():
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS transactions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id TEXT,
         account TEXT,
         type TEXT,
