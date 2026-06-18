@@ -98,27 +98,39 @@ def init_db():
 
     c.execute("""
 
-    CREATE TABLE IF NOT EXISTS transactions (
+CREATE TABLE IF NOT EXISTS transactions (
 
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-        user_id TEXT,
+    user_id TEXT,
 
-        account TEXT,
+    account TEXT,
 
-        type TEXT,
+    type TEXT,
 
-        amount REAL,
+    amount REAL,
 
-        category TEXT,
+    category TEXT,
 
-        created_at TEXT,
+    created_at TEXT,
 
-        timestamp REAL
+    timestamp REAL
 
-    )
+)
+
+""")
+
+try:
+
+    c.execute("""
+
+    ALTER TABLE transactions
+    ADD COLUMN user_id TEXT
 
     """)
+
+except:
+    pass
 
     # GOALS
 
