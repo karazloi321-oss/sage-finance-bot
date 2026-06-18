@@ -187,6 +187,17 @@ def init_db():
     )
 
     """)
+    try:
+
+    c.execute("""
+
+    ALTER TABLE products
+    ADD COLUMN user_id TEXT
+
+    """)
+
+except:
+    pass
 
     conn.commit()
 
