@@ -152,6 +152,12 @@ def get_debts(user_id):
 )
 def delete_debt(debt_id):
 
+    data = request.json or {}
+
+    user_id = str(
+        data.get("user_id", "")
+    )
+
     conn = get_conn()
 
     c = conn.cursor()
@@ -161,8 +167,14 @@ def delete_debt(debt_id):
     DELETE FROM debts
 
     WHERE id=?
+    AND user_id=?
 
-    """, (debt_id,))
+    """, (
+
+        debt_id,
+        user_id
+
+    ))
 
     conn.commit()
     conn.close()
@@ -186,6 +198,10 @@ def update_debt(debt_id):
 
     data = request.json
 
+    user_id = str(
+        data.get("user_id")
+    )
+
     amount = float(
         data.get(
             "amount",
@@ -204,11 +220,13 @@ def update_debt(debt_id):
     SET amount=?
 
     WHERE id=?
+    AND user_id=?
 
     """, (
 
         amount,
-        debt_id
+        debt_id,
+        user_id
 
     ))
 
