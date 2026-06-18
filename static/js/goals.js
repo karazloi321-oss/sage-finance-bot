@@ -110,6 +110,8 @@ async function addToGoal(id){
 
                 body:JSON.stringify({
 
+                    user_id:userId,
+
                     amount:amount
 
                 })
@@ -144,7 +146,19 @@ async function deleteGoal(id){
             `/delete_goal/${id}`,
 
             {
-                method:"DELETE"
+
+                method:"DELETE",
+
+                headers:{
+                    "Content-Type":"application/json"
+                },
+
+                body:JSON.stringify({
+
+                    user_id:userId
+
+                })
+
             }
 
         );
