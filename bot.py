@@ -118,9 +118,9 @@ def init_db():
     )
     """)
 
-c.execute("""
+    c.execute("""
 
-CREATE TABLE IF NOT EXISTS products (
+    CREATE TABLE IF NOT EXISTS products (
 
     id INTEGER PRIMARY KEY AUTOINCREMENT,
 
