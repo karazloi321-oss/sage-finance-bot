@@ -164,31 +164,31 @@ def init_db():
 
        # PRODUCTS
 
-    c.execute("""
+   c.execute("""
 
-    CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS products (
 
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
 
-        name TEXT,
+    name TEXT,
 
-        category TEXT,
+    category TEXT,
 
-        quantity REAL DEFAULT 0,
+    quantity REAL DEFAULT 0,
 
-        buy_price REAL DEFAULT 0,
+    buy_price REAL DEFAULT 0,
 
-        sell_price REAL DEFAULT 0,
+    sell_price REAL DEFAULT 0,
 
-        barcode TEXT,
+    barcode TEXT,
 
-        created_at TEXT
+    created_at TEXT
 
-    )
+)
 
-    """)
-    
-    try:
+""")
+
+try:
 
     c.execute("""
 
@@ -200,9 +200,8 @@ def init_db():
 except:
     pass
 
-    conn.commit()
-
-    conn.close()
+conn.commit()
+conn.close()
 
 init_db()
 # =====================================================
