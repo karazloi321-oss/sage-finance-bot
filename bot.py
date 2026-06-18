@@ -86,6 +86,7 @@ def init_db():
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS transactions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id TEXT,
         account TEXT,
         type TEXT,
@@ -117,20 +118,31 @@ def init_db():
     )
     """)
 
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS products (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT,
-        name TEXT,
-        category TEXT,
-        quantity REAL DEFAULT 0,
-        buy_price REAL DEFAULT 0,
-        sell_price REAL DEFAULT 0,
-        barcode TEXT,
-        created_at TEXT
-    )
-    """)
+c.execute("""
+
+CREATE TABLE IF NOT EXISTS products (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    user_id TEXT,
+
+    name TEXT,
+
+    category TEXT,
+
+    quantity REAL DEFAULT 0,
+
+    buy_price REAL DEFAULT 0,
+
+    sell_price REAL DEFAULT 0,
+
+    barcode TEXT,
+
+    created_at TEXT
+
+)
+
+""")
 
     migrations = [
 
