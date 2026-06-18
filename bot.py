@@ -94,7 +94,7 @@ def init_db():
 
     """)
 
- # TRANSACTIONS
+# TRANSACTIONS
 
 c.execute("""
 
@@ -132,7 +132,8 @@ try:
 except:
     pass
 
- # GOALS
+
+# GOALS
 
 c.execute("""
 
