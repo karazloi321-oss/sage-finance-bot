@@ -187,6 +187,7 @@ def init_db():
     )
 
     """)
+    
     try:
 
     c.execute("""
