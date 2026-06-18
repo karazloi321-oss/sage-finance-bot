@@ -162,47 +162,47 @@ def init_db():
 
     """)
 
-   # PRODUCTS
-
-   c.execute("""
-
- CREATE TABLE IF NOT EXISTS products (
-
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-    name TEXT,
-
-    category TEXT,
-
-    quantity REAL DEFAULT 0,
-
-    buy_price REAL DEFAULT 0,
-
-    sell_price REAL DEFAULT 0,
-
-    barcode TEXT,
-
-    created_at TEXT
-
-)
-
-""")
-
-try:
+    # PRODUCTS
 
     c.execute("""
 
-    ALTER TABLE products
-    ADD COLUMN user_id TEXT
+    CREATE TABLE IF NOT EXISTS products (
+
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+        name TEXT,
+
+        category TEXT,
+
+        quantity REAL DEFAULT 0,
+
+        buy_price REAL DEFAULT 0,
+
+        sell_price REAL DEFAULT 0,
+
+        barcode TEXT,
+
+        created_at TEXT
+
+    )
 
     """)
 
-except:
-    pass
+    try:
 
-conn.commit()
-conn.close()
+        c.execute("""
 
+        ALTER TABLE products
+        ADD COLUMN user_id TEXT
+
+        """)
+
+    except:
+        pass
+
+    conn.commit()
+    conn.close()
+    
 init_db()
 # =====================================================
 # REGISTER BLUEPRINTS
